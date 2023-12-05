@@ -3,5 +3,6 @@
         <file>res/whitePiece.png</file>
         <file>res/nonePiece.png</file>
         <file>res/blackPiece.png</file>
+        <file>res/board.png</file>
     </qresource>
 </RCC>

@@ -8,6 +8,13 @@
 
 #include "../ui/selectionui.h"
 
+// 棋盘大小
+#define N 15
+// 胜利子数
+#define WIN_POINT 5
+// 先手
+#define FIRST BLACK
+
 enum class OCCUPATION
 {
     BLACK = -1,
@@ -23,11 +30,15 @@ private:
     const QString blackPieceUrl = ":/res/blackPiece.png";
     const QString nonePieceUrl = ":/res/nonePiece.png";
 
+
     QPixmap whitePiece;
     QPixmap blackPiece;
     QPixmap nonePiece;
     QPixmap whiteTransparentPiece;
     QPixmap blackTransparentPiece;
+
+public:
+    const QString boardUrl = ":/res/board.png";
 
 private:
     QPixmap getPiecePixMap(const QString &url){

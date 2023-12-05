@@ -13,8 +13,11 @@ class PieceButton : public QPushButton {
     OCCUPATION color;
     bool canhover = true;
     int n;
+    int x;
+    int y;
+
 public:
-    PieceButton(const int n, QWidget *parent = nullptr);
+    PieceButton(const int _x, const int _y, const int n, QWidget *parent = nullptr);
     void setColor(OCCUPATION color);
     void clearColor();
 
@@ -23,7 +26,7 @@ protected:
 
 public slots:
     void updateColor();
-
+    void buttonPushed();
 private:
     void setImage(const QPixmap &map);
 };
