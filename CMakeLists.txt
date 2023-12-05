@@ -15,11 +15,18 @@ file(GLOB_RECURSE SOURCE_FILES
     ${CMAKE_SOURCE_DIR}/src/*.cpp
     ${CMAKE_SOURCE_DIR}/src/*.h
     ${CMAKE_SOURCE_DIR}/src/*.hpp
+    ${CMAKE_SOURCE_DIR}/src/controller/*.cpp
+    ${CMAKE_SOURCE_DIR}/src/controller/*.h
+    ${CMAKE_SOURCE_DIR}/src/controller/*.hpp
+    ${CMAKE_SOURCE_DIR}/src/ui/*.cpp
+    ${CMAKE_SOURCE_DIR}/src/ui/*.h
+    ${CMAKE_SOURCE_DIR}/src/ui/*.hpp
 )
 
 
 add_executable(WUZIQI
-  ${SOURCE_FILES}
+    ${SOURCE_FILES}
+    resource.qrc
 )
 target_link_libraries(WUZIQI
     Qt6::Core

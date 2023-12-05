@@ -62,3 +62,5 @@ example
 *.rc
 action-cli
 .cache
+
+tmp
