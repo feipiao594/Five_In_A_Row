@@ -4,16 +4,10 @@ on:
   push:
     paths:
       - "src/**"
-      - "!**.qml"
-      - "!**.md"
-      - "!**.cmake"
 
   pull_request:
     paths:
       - "src/**"
-      - "!**.qml"
-      - "!**.md"
-      - "!**.cmake"
 
 permissions: write-all
 
