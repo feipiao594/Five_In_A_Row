@@ -2,9 +2,13 @@
 
 Coordinate dirVector[4] = {{0,1}, {1,0}, {-1,1}, {1,1}};
 
+Player Manager::getCurPlayer() { return ((getTotalStep() & 1) == 0) ? black : white; }
+
 int Manager::getTotalStep() { return record.size(); }
 
-Player Manager::getCurPlayer() { return ((getTotalStep() & 1) == 0) ? black : white; }
+Unit Manager::getCurColor() { return getCurPlayer().unit; }
+
+Unit Manager::getWinner() { return winner; }
 
 Manager::Manager(bool isBlackComputer, bool isWhiteComputer)
 {
@@ -54,21 +58,18 @@ void Manager::drop(Coordinate coord)
         record.push(coord);
         if (isWin(coord))
         {
-            if (player.unit == Unit::Black)
-                emit onBlackWin();
-            else
-                emit onWhiteWin();
+            winner = player.unit;
+            emit onGameOver();
         }
-        if (getTotalStep() >= BOARD_SIZE * BOARD_SIZE) emit onTie();
+        else if (getTotalStep() >= BOARD_SIZE * BOARD_SIZE)
+        {
+            winner = Unit::Empty;
+            emit onGameOver();
+        }
         else
         {
             player = getCurPlayer();
-            if (player.unit == Unit::Black)
-                emit onBlackTurn();
-            else
-                emit onWhiteTurn();
-
-            if (player.isComputer) drop(compute(player.unit));
+            emit onDropped();
         }
     }
     else emit onOverlap();
@@ -93,6 +94,6 @@ void Manager::whiteUndo()
 
 Coordinate Manager::compute(Unit unit)
 {
-
+    return Coordinate();
 }
 

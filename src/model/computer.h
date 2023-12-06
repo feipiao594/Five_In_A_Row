@@ -3,13 +3,13 @@
 
 #include "board.h"
 
-class computer {
+class Computer {
 public:
 
-    computer();
+    Computer();
 
-    void push(Coordinate, Unit);
-    void pop(Coordinate, Unit);
+    void update(Coordinate, Unit);
+    void remove(Coordinate, Unit);
 
 private:
 
@@ -18,7 +18,10 @@ private:
     int posGroup[BOARD_SIZE - 4][BOARD_SIZE - 4][2];
     int negGroup[BOARD_SIZE - 4][BOARD_SIZE - 4][2];
 
-
+    void fitHorGroup(Coordinate, void(*)(int[]));
+    void fitVerGroup(Coordinate, void(*)(int[]));
+    void fitPosGroup(Coordinate, void(*)(int[]));
+    void fitNegGroup(Coordinate, void(*)(int[]));
 
 };
 
