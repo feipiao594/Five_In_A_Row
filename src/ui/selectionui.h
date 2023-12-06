@@ -11,13 +11,16 @@ class SelectionUI : public QDialog
 
 private:
     QVBoxLayout *mainLayout;
-    QPushButton *aiModeButton;
     QPushButton *personModeButton;
+    QPushButton *aiModeButton;
+
 
 public slots:
     void startGame();
     void showSelection();
-    void endProgram();
+    void endProgram() {
+        close();
+    }
 
 signals:
     void clickedAiMode();

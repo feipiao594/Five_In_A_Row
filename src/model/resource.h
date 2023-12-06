@@ -9,17 +9,17 @@
 #include "../ui/selectionui.h"
 
 // 棋盘大小
-#define N 15
+#define BOARD_SIZE 15
 // 胜利子数
 #define WIN_POINT 5
 // 先手
 #define FIRST BLACK
 
-enum class OCCUPATION
+enum class Unit
 {
-    BLACK = -1,
-    NONE = 0,
-    WHITE = 1
+    Empty = 0,
+    Black = -1,
+    White = 1,
 };
 
 class Resource : public QObject {
@@ -28,12 +28,12 @@ class Resource : public QObject {
 private:
     const QString whitePieceUrl = ":/res/whitePiece.png";
     const QString blackPieceUrl = ":/res/blackPiece.png";
-    const QString nonePieceUrl = ":/res/nonePiece.png";
+    const QString emptyPieceUrl = ":/res/emptyPiece.png";
 
 
     QPixmap whitePiece;
     QPixmap blackPiece;
-    QPixmap nonePiece;
+    QPixmap emptyPiece;
     QPixmap whiteTransparentPiece;
     QPixmap blackTransparentPiece;
 
@@ -52,7 +52,7 @@ private:
         setParent(SelectionUI::getInstance());
         whitePiece = getPiecePixMap(whitePieceUrl);
         blackPiece = getPiecePixMap(blackPieceUrl);
-        nonePiece = changeOpacity(getPiecePixMap(nonePieceUrl),0);
+        emptyPiece = changeOpacity(getPiecePixMap(emptyPieceUrl),0);
         whiteTransparentPiece = changeOpacity(whitePiece, 100);
         blackTransparentPiece = changeOpacity(blackPiece, 100);
     };
@@ -74,18 +74,18 @@ public:
         p1.end();
         return temp;
     }
-    QPixmap color2pixmap(OCCUPATION color, bool isTransparent) {
+    QPixmap color2pixmap(Unit color, bool isTransparent) {
         switch(color){
-        case OCCUPATION::BLACK:
+        case Unit::Black:
             if(isTransparent)
                 return blackTransparentPiece;
             return blackPiece;
-        case OCCUPATION::WHITE:
+        case Unit::White:
             if(isTransparent)
                 return whiteTransparentPiece;
             return whitePiece;
-        case OCCUPATION::NONE:
-            return nonePiece;
+        case Unit::Empty:
+            return emptyPiece;
         }
     }
 };
