@@ -2,45 +2,60 @@
 #define MAINUI_H
 
 #include <QDialog>
+#include <QLabel>
 #include <QLayout>
 #include <QPushButton>
-#include <QLabel>
 
- #include "piecebutton.h"
+#include "piecebutton.h"
 
-class MainUI : public QDialog
-{
-    Q_OBJECT
+class MainUI : public QDialog {
+  Q_OBJECT
 
 private:
-    QHBoxLayout *mainLayout;
-    QVBoxLayout *black, *white;
-    QGridLayout *game_region;
-    QWidget *board;
-    QLabel *text_black, *text_white;
-    PieceButton *pieces[BOARD_SIZE][BOARD_SIZE];
-    QPushButton *start, *retract_black, *retract_white;
+  QHBoxLayout *mainLayout;
+  QVBoxLayout *black, *white;
+  QGridLayout *game_region;
+  QWidget *board;
+  QLabel *text_black, *text_white;
+  PieceButton *pieces[BOARD_SIZE][BOARD_SIZE];
+  QPushButton *start, *retract_black, *retract_white;
 
 signals:
-    void mainUIClosed();
+  void mainUIClosed();
 
 protected:
-    void closeEvent(QCloseEvent *event) override {
-        emit mainUIClosed();
-        QDialog::closeEvent(event);
-    }
+  void closeEvent(QCloseEvent *event) override {
+    emit mainUIClosed();
+    QDialog::closeEvent(event);
+  }
 
 public slots:
-
+  void showDropPiece();
+  void restartGame();
 
 private:
-    MainUI();
+  Unit turnColor;
+  void clearPieceColor() {
+    for (int i = 0; i < BOARD_SIZE; i++)
+      for (int j = 0; j < BOARD_SIZE; j++) {
+        pieces[i][j]->clearColor();
+      }
+  };
+  MainUI();
+
 public:
-    static MainUI* getInstance() {
-        static MainUI* singleton = nullptr;
-        if (!singleton)
-            singleton = new MainUI;
-        return singleton;
-    }
+  void on_game_over(Unit color);
+  void setPieceColor(std::pair<int, int> pos, Unit color) {
+    auto [x, y] = pos;
+    pieces[x][y]->setColor(color);
+    pieces[x][y]->updateColor();
+  }
+  void piecePushed(int x, int y);
+  static MainUI *getInstance() {
+    static MainUI *singleton = nullptr;
+    if (!singleton)
+      singleton = new MainUI;
+    return singleton;
+  }
 };
 #endif // MAINUI_H

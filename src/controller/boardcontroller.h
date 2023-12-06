@@ -4,32 +4,46 @@
 #include <QObject>
 #include <utility>
 
-class BoardController : public QObject
-{
-    Q_OBJECT
+#include "../model/resource.h"
 
-    int current_drop_x;
-    int current_drop_y;
+class BoardController : public QObject {
+  Q_OBJECT
+
+  int current_drop_x;
+  int current_drop_y;
+  Unit current_drop_color;
+  Unit whoTurn;
 
 signals:
-    void updateDropPiece();
+  void updateDropPiece();
+public slots:
+  void setDropPieceSuccessful();
 
 public:
-    BoardController() : current_drop_x(-1), current_drop_y(-1){};
-    void dropPiece(int x,int y) {
-        current_drop_x = x;
-        current_drop_y = y;
-    }
-    std::pair<int,int> getDropPiece(){
-        return std::make_pair(current_drop_x, current_drop_y);
-    }
+  void pieceClicked(int x, int y);
+  BoardController() : current_drop_x(-1), current_drop_y(-1) {
+    whoTurn = Unit::Black;
+  };
+  void dropPiece(int x, int y, Unit color) {
+    current_drop_x = x;
+    current_drop_y = y;
+    current_drop_color = color;
+    whoTurn = color == Unit::Black ? Unit::White : Unit::Black;
+  }
 
-    static BoardController* getInstance() {
-        static BoardController* singleton = nullptr;
-        if (!singleton)
-            singleton = new BoardController;
-        return singleton;
-    }
+  Unit getDropPieceColor() { return current_drop_color; }
+  Unit getWhoTurn() { return whoTurn; }
+
+  std::pair<int, int> getDropPiecePos() {
+    return std::make_pair(current_drop_x, current_drop_y);
+  }
+
+  static BoardController *getInstance() {
+    static BoardController *singleton = nullptr;
+    if (!singleton)
+      singleton = new BoardController;
+    return singleton;
+  }
 };
 
 #endif // BOARDCONTROLLER_H

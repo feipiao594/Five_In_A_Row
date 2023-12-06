@@ -4,18 +4,16 @@
 #include "coordinate.h"
 #include "resource.h"
 
-class Board
-{
+class Board {
 public:
+  Unit units[BOARD_SIZE][BOARD_SIZE];
 
-    Unit units[BOARD_SIZE][BOARD_SIZE];
+  Board();
 
-    Board();
+  Unit getUnit(Coordinate);
+  void setUnit(Coordinate, Unit);
 
-    Unit getUnit(Coordinate);
-    void setUnit(Coordinate, Unit);
-
-    void clear();
+  void clear();
 };
 
 #endif // BOARD_H

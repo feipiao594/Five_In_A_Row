@@ -7,43 +7,39 @@
 #include "coordinate.h"
 #include "player.h"
 
-class Manager
-{
+class Manager : public QObject {
+  Q_OBJECT
 public:
+  Manager(bool, bool);
 
-    Manager(bool, bool);
-
-    int getTotalStep();
-    Player getCurPlayer();
+  int getTotalStep();
+  Player getCurPlayer();
 
 signals:
-
-    void onOverlap();
-    void onBlackTurn();
-    void onWhiteTurn();
-    void onBlackWin();
-    void onWhiteWin();
-    void onTie();
+  void onOverlap();
+  void onBlackTurn();
+  void onWhiteTurn();
+  void onBlackWin();
+  void onWhiteWin();
+  void onTie();
 
 public slots:
 
-    void drop(Coordinate);
-    void blackUndo();
-    void whiteUndo();
+  void drop(Coordinate);
+  void blackUndo();
+  void whiteUndo();
 
 private:
+  Board board;
+  Player black, white;
+  QStack<Coordinate> record;
 
-    Board board;
-    Player black, white;
-    QStack<Coordinate> record;
+  bool isCoordValid(Coordinate);
+  bool isWin(Coordinate);
 
-    bool isCoordValid(Coordinate);
-    bool isWin(Coordinate);
+  void undo();
 
-    void undo();
-
-    Coordinate compute(Unit);
-
+  Coordinate compute(Unit);
 };
 
 #endif // MANAGER_H

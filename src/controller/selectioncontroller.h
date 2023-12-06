@@ -3,14 +3,21 @@
 
 #include <QObject>
 
-class SelectionController : public QObject
-{
-    Q_OBJECT
+class SelectionController : public QObject {
+  Q_OBJECT
+
+private:
+  SelectionController();
+
+public slots:
+
 public:
-    explicit SelectionController(QObject *parent = nullptr);
-
-signals:
-
+  static SelectionController *getInstance() {
+    static SelectionController *singleton = nullptr;
+    if (!singleton)
+      singleton = new SelectionController;
+    return singleton;
+  }
 };
 
 #endif // SELECTIONCONTROLLER_H
