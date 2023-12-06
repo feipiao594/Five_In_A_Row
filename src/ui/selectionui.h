@@ -5,36 +5,33 @@
 #include <QLayout>
 #include <QPushButton>
 
-class SelectionUI : public QDialog
-{
-    Q_OBJECT
+class SelectionUI : public QDialog {
+  Q_OBJECT
 
 private:
-    QVBoxLayout *mainLayout;
-    QPushButton *personModeButton;
-    QPushButton *aiModeButton;
-
+  QVBoxLayout *mainLayout;
+  QPushButton *personModeButton;
+  QPushButton *aiModeButton;
 
 public slots:
-    void startGame();
-    void showSelection();
-    void endProgram() {
-        close();
-    }
+  void startGame();
+  void startGameAI();
+  void showSelection();
+  void endProgram() { close(); }
 
 signals:
-    void clickedAiMode();
-    void clickedPersonMode();
+  void clickedAiMode();
+  void clickedPersonMode();
 
 private:
-    SelectionUI();
+  SelectionUI();
 
 public:
-    static SelectionUI* getInstance() {
-        static SelectionUI* singleton = nullptr;
-        if (!singleton)
-            singleton = new SelectionUI;
-        return singleton;
-    }
+  static SelectionUI *getInstance() {
+    static SelectionUI *singleton = nullptr;
+    if (!singleton)
+      singleton = new SelectionUI;
+    return singleton;
+  }
 };
 #endif // SELECTION_H

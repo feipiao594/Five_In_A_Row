@@ -4,43 +4,61 @@
 #include <QStack>
 
 #include "board.h"
+#include "computer.h"
 #include "coordinate.h"
 #include "player.h"
 
-class Manager
-{
+class Manager : public QObject {
+  Q_OBJECT
+
 public:
+  Manager(bool, bool);
 
-    Manager(bool, bool);
+    Player curPlayer();
 
-    int getTotalStep();
-    Player getCurPlayer();
+  int getTotalStep();
+  Unit getCurColor();
+  Unit getWinner();
+  Coordinate getLatestCoord();
+  QVector<Coordinate> getUndoList();
 
-    void (*onOverlap)();
-    void (*onBlackTurn)();
-    void (*onWhiteTurn)();
-    void (*onBlackWin)();
-    void (*onWhiteWin)();
-    void (*onTie)();
+  static Manager *getInstance() {
+    static Manager *singleton = nullptr;
+    if (!singleton)
+      singleton = new Manager(false, false);
+    return singleton;
+  }
+
+signals:
+
+  void onOverlap();
+  void onDropped();
+  void onGameOver();
+  void onUndoDone();
+
+public slots:
 
     void drop(Coordinate);
-
     void blackUndo();
     void whiteUndo();
+    void restart();
+    void setComputer(bool isBlackComputer, bool isWhiteComputer);
 
 private:
+  Board board;
+  Player black, white;
+  QStack<Coordinate> record;
+  Computer computer;
 
-    Board board;
-    Player black, white;
-    QStack<Coordinate> record;
+  Unit winner;
+  QVector<Coordinate> undoList;
 
-    bool isCoordValid(Coordinate);
-    bool isWin(Coordinate);
+  bool isCoordValid(Coordinate);
+  bool isWin(Coordinate);
 
-    void Undo();
+  Coordinate undo();
 
-    Coordinate compute(Unit);
-
+  Coordinate compute(Unit);
 };
 
 #endif // MANAGER_H

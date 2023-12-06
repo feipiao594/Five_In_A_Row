@@ -3,16 +3,13 @@
 
 #include "board.h"
 
-class Player
-{
+class Player {
 public:
+  Unit unit;
+  bool isComputer;
 
-    Unit unit;
-    bool isComputer;
-
-    Player();
-    Player(Unit, bool);
-
+  Player();
+  Player(Unit, bool);
 };
 
 #endif // PLAYER_H

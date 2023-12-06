@@ -2,4 +2,5 @@
 
 Player::Player() {}
 
-Player::Player(Unit unit, bool isComputer) : unit(unit), isComputer(isComputer) {}
+Player::Player(Unit unit, bool isComputer)
+    : unit(unit), isComputer(isComputer) {}
