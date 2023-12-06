@@ -12,12 +12,12 @@ PieceButton::PieceButton(const int _x, const int _y, const int n, QWidget *paren
 }
 
 void PieceButton::clearColor(){
-    setImage(Resource::getInstance()->color2pixmap(OCCUPATION::NONE, false));
-    color = OCCUPATION::NONE;
+    setImage(Resource::getInstance()->color2pixmap(Unit::Empty, false));
+    color = Unit::Empty;
     canhover = true;
 };
 
-void PieceButton::setColor(OCCUPATION color){
+void PieceButton::setColor(Unit color){
     PieceButton::color = color;
     canhover = false;
     updateColor();
@@ -31,7 +31,11 @@ void PieceButton::updateColor() {
 void PieceButton::buttonPushed() {
     qDebug()<<"x: "<<x<<"\ny: "<<y;
     canhover = false;
-    setImage(Resource::getInstance()->color2pixmap(OCCUPATION::BLACK, false));
+    if(flag)
+        setImage(Resource::getInstance()->color2pixmap(Unit::White, false));
+    else
+        setImage(Resource::getInstance()->color2pixmap(Unit::Black, false));
+    flag = ! flag;
 }
 
 void PieceButton::setImage(const QPixmap &map){
@@ -44,10 +48,13 @@ bool PieceButton::event(QEvent *event){
     if(canhover){
         switch (event->type()) {
         case QEvent::Enter:
-            setImage(Resource::getInstance()->color2pixmap(OCCUPATION::BLACK, true));
+            if(flag)
+                setImage(Resource::getInstance()->color2pixmap(Unit::White, true));
+            else
+                setImage(Resource::getInstance()->color2pixmap(Unit::Black, true));
             break;
         case QEvent::Leave:
-            setImage(Resource::getInstance()->color2pixmap(OCCUPATION::NONE, false));
+            setImage(Resource::getInstance()->color2pixmap(Unit::Empty, false));
             break;
         default:
             break;
