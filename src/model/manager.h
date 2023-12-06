@@ -16,15 +16,18 @@ public:
     int getTotalStep();
     Player getCurPlayer();
 
-    void (*onOverlap)();
-    void (*onBlackTurn)();
-    void (*onWhiteTurn)();
-    void (*onBlackWin)();
-    void (*onWhiteWin)();
-    void (*onTie)();
+signals:
+
+    void onOverlap();
+    void onBlackTurn();
+    void onWhiteTurn();
+    void onBlackWin();
+    void onWhiteWin();
+    void onTie();
+
+public slots:
 
     void drop(Coordinate);
-
     void blackUndo();
     void whiteUndo();
 
@@ -37,7 +40,7 @@ private:
     bool isCoordValid(Coordinate);
     bool isWin(Coordinate);
 
-    void Undo();
+    void undo();
 
     Coordinate compute(Unit);
 
