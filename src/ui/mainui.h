@@ -16,6 +16,7 @@ private:
   QVBoxLayout *black, *white;
   QGridLayout *game_region;
   QWidget *board;
+  QLabel *img_black, *img_white;
   QLabel *text_black, *text_white;
   PieceButton *pieces[BOARD_SIZE][BOARD_SIZE];
   QPushButton *start, *retract_black, *retract_white;

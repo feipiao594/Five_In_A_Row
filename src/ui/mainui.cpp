@@ -10,8 +10,28 @@ MainUI::MainUI() : mainLayout(new QHBoxLayout) {
   retract_black = new QPushButton("悔棋");
   retract_white = new QPushButton("悔棋");
 
+  img_black = new QLabel();
+  img_white = new QLabel();
+
   text_black = new QLabel();
   text_white = new QLabel();
+
+  img_black->setAlignment(Qt::AlignCenter);
+  img_white->setAlignment(Qt::AlignCenter);
+
+  text_black->setAlignment(Qt::AlignCenter);
+  text_white->setAlignment(Qt::AlignCenter);
+
+  text_black->setFont(QFont("Arial", 14));
+  text_white->setFont(QFont("Arial", 14));
+
+  auto blackImg = Resource::getInstance()->color2pixmap(Unit::Black, false);
+  blackImg = blackImg.scaled(60, 60, Qt::KeepAspectRatio);
+  img_black->setPixmap(blackImg);
+
+  auto whiteImg = Resource::getInstance()->color2pixmap(Unit::White, false);
+  whiteImg = whiteImg.scaled(60, 60, Qt::KeepAspectRatio);
+  img_white->setPixmap(whiteImg);
 
   text_black->setText("黑方");
   text_white->setText("白方");
@@ -20,9 +40,11 @@ MainUI::MainUI() : mainLayout(new QHBoxLayout) {
   white = new QVBoxLayout();
 
   black->addWidget(text_black);
+  black->addWidget(img_black);
   black->addWidget(retract_black);
 
   white->addWidget(text_white);
+  white->addWidget(img_white);
   white->addWidget(retract_white);
 
   game_region = new QGridLayout();
@@ -78,6 +100,7 @@ void MainUI::onGameOver(Unit color) {
   connect(retract_black, &QPushButton::clicked, this, &MainUI::restartGame);
   retract_black->setText("重新开始");
   text_white->hide();
+  img_white->hide();
   retract_white->hide();
 
   switch (color) {
@@ -98,6 +121,7 @@ void MainUI::onGameOver(Unit color) {
     }
 
   text_black->setText(message + "\n游戏已结束，要再来一局吗？");
+  img_black->setPixmap(Resource::getInstance()->color2pixmap(color, false));
 }
 
 void MainUI::clearPiecePos(int x, int y) { pieces[x][y]->clearColor(); }
@@ -110,8 +134,17 @@ void MainUI::restartGame() {
   connect(retract_white, &QPushButton::clicked, this, &MainUI::whiteRetract);
   retract_white->setText("悔棋");
   retract_black->setText("悔棋");
+  auto blackImg = Resource::getInstance()->color2pixmap(Unit::Black, false);
+  blackImg = blackImg.scaled(60, 60, Qt::KeepAspectRatio);
+  img_black->setPixmap(blackImg);
+  auto whiteImg = Resource::getInstance()->color2pixmap(Unit::White, false);
+  whiteImg = whiteImg.scaled(60, 60, Qt::KeepAspectRatio);
+  img_white->setPixmap(whiteImg);
   text_black->setText("黑方");
   text_white->setText("白方");
+  text_black->setText("黑方");
+  text_white->setText("白方");
+  img_white->show();
   text_black->show();
   text_white->show();
   retract_white->show();
