@@ -22,6 +22,8 @@ private:
 
 signals:
   void mainUIClosed();
+  void onBlackRetract();
+  void onWhiteRetract();
 
 protected:
   void closeEvent(QCloseEvent *event) override {
@@ -33,8 +35,8 @@ public slots:
   void showDropPiece();
   void restartGame();
   void onGameOver(Unit color);
-  void blackRetract() { qDebug() << "blackRetract"; };
-  void whiteRetract() { qDebug() << "whiteRetract"; };
+  void blackRetract() { emit onBlackRetract(); };
+  void whiteRetract() { emit onWhiteRetract(); };
 
 private:
   Unit turnColor;
@@ -47,6 +49,7 @@ private:
   MainUI();
 
 public:
+  void clearPiecePos(int x, int y);
   void setPieceColor(std::pair<int, int> pos, Unit color) {
     auto [x, y] = pos;
     pieces[x][y]->setColor(color);

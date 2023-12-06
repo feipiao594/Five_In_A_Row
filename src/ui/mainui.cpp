@@ -48,7 +48,15 @@ MainUI::MainUI() : mainLayout(new QHBoxLayout) {
   connect(Manager::getInstance(), &Manager::onDropped,
           BoardController::getInstance(),
           &BoardController::onDroppedController);
+  connect(Manager::getInstance(), &Manager::onGameOver,
+          BoardController::getInstance(),
+          &BoardController::onGameOverController);
+  connect(Manager::getInstance(), &Manager::onUndoDone,
+          BoardController::getInstance(),
+          &BoardController::onUndoDoneController);
 
+  connect(BoardController::getInstance(), &BoardController::updateUndo, this,
+          &MainUI::clearPiecePos);
   connect(BoardController::getInstance(), &BoardController::updateDropPiece,
           this, &MainUI::showDropPiece);
   connect(BoardController::getInstance(), &BoardController::updateWinner, this,
@@ -56,6 +64,11 @@ MainUI::MainUI() : mainLayout(new QHBoxLayout) {
 
   connect(retract_black, &QPushButton::clicked, this, &MainUI::blackRetract);
   connect(retract_white, &QPushButton::clicked, this, &MainUI::whiteRetract);
+
+  connect(this, &MainUI::onBlackRetract, Manager::getInstance(),
+          &Manager::blackUndo);
+  connect(this, &MainUI::onWhiteRetract, Manager::getInstance(),
+          &Manager::whiteUndo);
 }
 
 void MainUI::onGameOver(Unit color) {
@@ -79,8 +92,15 @@ void MainUI::onGameOver(Unit color) {
     break;
   }
 
+  for (int i = 0; i < BOARD_SIZE; i++)
+    for (int j = 0; j < BOARD_SIZE; j++) {
+      pieces[i][j]->stopUsing();
+    }
+
   text_black->setText(message + "\n游戏已结束，要再来一局吗？");
 }
+
+void MainUI::clearPiecePos(int x, int y) { pieces[x][y]->clearColor(); }
 
 void MainUI::restartGame() {
   retract_black->hide();
@@ -96,7 +116,12 @@ void MainUI::restartGame() {
   text_white->show();
   retract_white->show();
   retract_black->show();
-
+  for (int i = 0; i < BOARD_SIZE; i++)
+    for (int j = 0; j < BOARD_SIZE; j++) {
+      pieces[i][j]->clearColor();
+    }
+  Manager::getInstance()->restart();
+  BoardController::getInstance()->restartBoardController();
   SelectionUI::getInstance()->showSelection();
 }
 

@@ -16,11 +16,11 @@ public:
 
     Player curPlayer();
 
-    int getTotalStep();
-    Unit getCurColor();
-    Unit getWinner();
-    Coordinate getLatestCoord();
-    QVector<Coordinate> getUndoList();
+  int getTotalStep();
+  Unit getCurColor();
+  Unit getWinner();
+  Coordinate getLatestCoord();
+  QVector<Coordinate> getUndoList();
 
   static Manager *getInstance() {
     static Manager *singleton = nullptr;
@@ -31,10 +31,10 @@ public:
 
 signals:
 
-    void onOverlap();
-    void onDropped();
-    void onGameOver();
-    void onUndoDone();
+  void onOverlap();
+  void onDropped();
+  void onGameOver();
+  void onUndoDone();
 
 public slots:
 
@@ -45,19 +45,18 @@ public slots:
     void setComputer(bool isBlackComputer, bool isWhiteComputer);
 
 private:
+  Board board;
+  Player black, white;
+  QStack<Coordinate> record;
+  Computer computer;
 
-    Board board;
-    Player black, white;
-    QStack<Coordinate> record;
-    Computer computer;
-
-    Unit winner;
-    QVector<Coordinate> undoList;
+  Unit winner;
+  QVector<Coordinate> undoList;
 
   bool isCoordValid(Coordinate);
   bool isWin(Coordinate);
 
-    Coordinate undo();
+  Coordinate undo();
 
   Coordinate compute(Unit);
 };

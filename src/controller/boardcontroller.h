@@ -18,16 +18,24 @@ class BoardController : public QObject {
 signals:
   void updateDropPiece();
   void updateWinner(Unit);
+  void updateUndo(int x, int y);
 public slots:
   void onGameOverController() {
     emit updateWinner(Manager::getInstance()->getWinner());
   }
   void onDroppedController() {
-    //    current_drop_x = x;
-    //    current_drop_y = y;
+    current_drop_x = Manager::getInstance()->getLatestCoord().col;
+    current_drop_y = Manager::getInstance()->getLatestCoord().row;
     current_drop_color = Manager::getInstance()->getCurColor();
     whoTurn = current_drop_color == Unit::Black ? Unit::White : Unit::Black;
     setDropPieceSuccessful();
+  }
+
+  void onUndoDoneController() {
+    whoTurn = Manager::getInstance()->getCurColor();
+    auto list = Manager::getInstance()->getUndoList();
+    for (auto pos : list)
+      emit updateUndo(pos.col, pos.row);
   }
 
 public:
@@ -42,6 +50,8 @@ public:
     current_drop_color = color;
     whoTurn = color == Unit::Black ? Unit::White : Unit::Black;
   }
+
+  void restartBoardController() { whoTurn = Unit::Black; }
 
   Unit getDropPieceColor() { return current_drop_color; }
   Unit getWhoTurn() { return whoTurn; }

@@ -22,6 +22,7 @@ public:
   void updateColor();
   void setColor(Unit color);
   void clearColor();
+  void stopUsing() { canhover = false; }
 
 protected:
   bool event(QEvent *event) override;
