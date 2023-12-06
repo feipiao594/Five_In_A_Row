@@ -40,6 +40,14 @@ jobs:
           cache: "true"
           cache-key-prefix: "install-qt-action"
 
+      - name: Install Fcitx5 for Qt
+        run: |
+          sudo apt-get install -y extra-cmake-modules
+          git clone --depth 1 --branch 5.1.1 https://github.com/fcitx/fcitx5-qt
+          cmake -DBUILD_ONLY_PLUGIN=ON -DENABLE_QT4=OFF -DENABLE_QT5=OFF -DENABLE_QT6=ON -G Ninja -S ./fcitx5-qt -B ./fcitx5-qt-build -DCMAKE_PREFIX_PATH=${{env.Qt6_DIR}} -DCMAKE_BUILD_TYPE=Release
+          cmake --build ./fcitx5-qt-build --parallel --config Release
+          cmake --install ./fcitx5-qt-build
+
       - name: Configure CMake
         run: cmake -G Ninja -S ${{github.workspace}} -B ${{github.workspace}}/build -DCMAKE_PREFIX_PATH=${{env.Qt6_DIR}} -DCMAKE_BUILD_TYPE=${{env.BUILD_TYPE}}
 
@@ -52,11 +60,9 @@ jobs:
           plugins: qt appimage
 
       - name: Package
-        if: startsWith(github.event.ref, 'refs/tags/')
         env:
           EXTRA_QT_PLUGINS: qt5compat
         run: |
-          export QML_SOURCES_PATHS=./
           echo "[Desktop Entry]" > FIVE_IN_A_ROW.desktop
           echo "Categories=Utility;" >> FIVE_IN_A_ROW.desktop
           echo "Icon=app_icon" >> FIVE_IN_A_ROW.desktop
@@ -67,13 +73,11 @@ jobs:
           mv ${{ env.fileName }}-*.AppImage ${{ env.TARGET }}.AppImage
           
       - uses: actions/upload-artifact@v2
-        if: startsWith(github.event.ref, 'refs/tags/')
         with:
           name: FIVE_IN_A_ROW_AppImage
           path: ${{ env.TARGET }}.AppImage
 
       - name: uploadRelease
-        if: startsWith(github.event.ref, 'refs/tags/')
         uses: svenstaro/upload-release-action@v2
         with:
           repo_token: ${{ secrets.GITHUB_TOKEN }}
@@ -118,18 +122,15 @@ jobs:
           cmake --build . --target all --config Release --parallel
 
       - name: Package
-        if: startsWith(github.event.ref, 'refs/tags/')
         run: |
           macdeployqt bin/release/FIVE_IN_A_ROW.app -verbose=1 -dmg
        
       - uses: actions/upload-artifact@v2
-        if: startsWith(github.event.ref, 'refs/tags/')
         with:
           name: FIVE_IN_A_ROW_MacOS
           path: bin/release/${{ env.TARGET }}.app
 
       - name: uploadRelease
-        if: startsWith(github.event.ref, 'refs/tags/')
         uses: svenstaro/upload-release-action@v2
         with:
           repo_token: ${{ secrets.GITHUB_TOKEN }}
@@ -179,7 +180,6 @@ jobs:
           echo vcToolsRedistDir=%VCToolsRedistDir% >> %GITHUB_ENV%
           
       - name: package
-        if: startsWith(github.event.ref, 'refs/tags/')
         id: package      
         env:
           archiveName: ${{ env.fileName }}-${{ matrix.qt_arch }}-${{ matrix.qt_ver }}
@@ -192,19 +192,16 @@ jobs:
            echo "::set-output name=packageName::$name"   
 
       - uses: actions/upload-artifact@v2
-        if: startsWith(github.event.ref, 'refs/tags/')
         with:
           name: ${{ steps.package.outputs.packageName }}
           path: dist          
           
       - name: inno setup install
-        if: startsWith(github.event.ref, 'refs/tags/')
         uses: zhuzichu520/inno-setup-action@v1.0.1
         with: 
           filepath: ./action-cli/InstallerScript.iss
           
       - name: uploadRelease
-        if: startsWith(github.event.ref, 'refs/tags/')
         uses: svenstaro/upload-release-action@v2
         with:
           repo_token: ${{ secrets.GITHUB_TOKEN }}
