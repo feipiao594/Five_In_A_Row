@@ -1,12 +1,14 @@
 #include "manager.h"
 
-Coordinate dirVector[4] = {{0, 1}, {1, 0}, {-1, 1}, {1, 1}};
+Coordinate dirVector[4] = {{0,1}, {1,0}, {-1,1}, {1,1}};
+
+Player Manager::getCurPlayer() { return ((getTotalStep() & 1) == 0) ? black : white; }
 
 int Manager::getTotalStep() { return record.size(); }
 
-Player Manager::getCurPlayer() {
-  return ((getTotalStep() & 1) == 0) ? black : white;
-}
+Unit Manager::getCurColor() { return getCurPlayer().unit; }
+
+Unit Manager::getWinner() { return winner; }
 
 Manager::Manager(bool isBlackComputer, bool isWhiteComputer) {
   board = Board();
@@ -45,31 +47,30 @@ bool Manager::isCoordValid(Coordinate coord) {
          coord.col < BOARD_SIZE;
 }
 
-void Manager::drop(Coordinate coord) {
-  if (board.getUnit(coord) == Unit::Empty) {
-    Player player = getCurPlayer();
-    board.setUnit(coord, player.unit);
-    record.push(coord);
-    if (isWin(coord)) {
-      if (player.unit == Unit::Black)
-        emit onBlackWin();
-      else
-        emit onWhiteWin();
+void Manager::drop(Coordinate coord)
+{
+    if (board.getUnit(coord) == Unit::Empty)
+    {
+        Player player = getCurPlayer();
+        board.setUnit(coord, player.unit);
+        record.push(coord);
+        if (isWin(coord))
+        {
+            winner = player.unit;
+            emit onGameOver();
+        }
+        else if (getTotalStep() >= BOARD_SIZE * BOARD_SIZE)
+        {
+            winner = Unit::Empty;
+            emit onGameOver();
+        }
+        else
+        {
+            player = getCurPlayer();
+            emit onDropped();
+        }
     }
-    if (getTotalStep() >= BOARD_SIZE * BOARD_SIZE)
-      emit onTie();
-    else {
-      player = getCurPlayer();
-      if (player.unit == Unit::Black)
-        emit onBlackTurn();
-      else
-        emit onWhiteTurn();
-
-      if (player.isComputer)
-        drop(compute(player.unit));
-    }
-  } else
-    emit onOverlap();
+    else emit onOverlap();
 }
 
 void Manager::undo() {
@@ -89,4 +90,8 @@ void Manager::whiteUndo() {
   undo();
 }
 
-Coordinate Manager::compute(Unit unit) {}
+Coordinate Manager::compute(Unit unit)
+{
+    return Coordinate();
+}
+

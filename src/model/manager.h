@@ -7,21 +7,24 @@
 #include "coordinate.h"
 #include "player.h"
 
-class Manager : public QObject {
-  Q_OBJECT
+class Manager : public QObject
+{
+    Q_OBJECT
+
 public:
   Manager(bool, bool);
 
-  int getTotalStep();
-  Player getCurPlayer();
+    Player getCurPlayer();
+
+    int getTotalStep();
+    Unit getCurColor();
+    Unit getWinner();
 
 signals:
-  void onOverlap();
-  void onBlackTurn();
-  void onWhiteTurn();
-  void onBlackWin();
-  void onWhiteWin();
-  void onTie();
+
+    void onOverlap();
+    void onDropped();
+    void onGameOver();
 
 public slots:
 
@@ -30,9 +33,12 @@ public slots:
   void whiteUndo();
 
 private:
-  Board board;
-  Player black, white;
-  QStack<Coordinate> record;
+
+    Board board;
+    Player black, white;
+    QStack<Coordinate> record;
+
+    Unit winner;
 
   bool isCoordValid(Coordinate);
   bool isWin(Coordinate);
