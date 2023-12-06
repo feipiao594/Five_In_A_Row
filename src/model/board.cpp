@@ -1,6 +1,6 @@
 #include "board.h"
 
-Board::Board() {}
+Board::Board() { clear(); }
 
 Unit Board::getUnit(Coordinate coord) { return units[coord.row][coord.col]; }
 

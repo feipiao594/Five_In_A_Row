@@ -16,7 +16,7 @@ public:
 
     Manager(bool, bool);
 
-    Player getCurPlayer();
+    Player curPlayer();
 
     int getTotalStep();
     Unit getCurColor();
@@ -36,6 +36,8 @@ public slots:
     void drop(Coordinate);
     void blackUndo();
     void whiteUndo();
+    void restart();
+    void setComputer(bool isBlackComputer, bool isWhiteComputer);
 
 private:
 
