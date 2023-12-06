@@ -10,6 +10,10 @@ Unit Manager::getCurColor() { return getCurPlayer().unit; }
 
 Unit Manager::getWinner() { return winner; }
 
+Coordinate Manager::getLatestCoord() { return record.top(); }
+
+QVector<Coordinate> Manager::getUndoList() { return undoList; };
+
 Manager::Manager(bool isBlackComputer, bool isWhiteComputer) {
   board = Board();
   black = Player(Unit::Black, isBlackComputer);
@@ -54,6 +58,7 @@ void Manager::drop(Coordinate coord)
         Player player = getCurPlayer();
         board.setUnit(coord, player.unit);
         record.push(coord);
+        computer.update(coord, player.unit);
         if (isWin(coord))
         {
             winner = player.unit;
@@ -73,21 +78,33 @@ void Manager::drop(Coordinate coord)
     else emit onOverlap();
 }
 
-void Manager::undo() {
-  if (!record.empty())
-    board.setUnit(record.pop(), Unit::Empty);
+Coordinate Manager::undo()
+{
+    Coordinate coord;
+    if (!record.empty())
+    {
+        coord = record.pop();
+        Unit unit = board.getUnit(coord);
+        board.setUnit(coord, Unit::Empty);
+        computer.remove(coord, unit);
+    }
+    return coord;
 }
 
-void Manager::blackUndo() {
-  if (getCurPlayer().unit == Unit::Black)
-    undo();
-  undo();
+void Manager::blackUndo()
+{
+    undoList.clear();
+    if (getCurPlayer().unit == Unit::Black) undoList.push_back(undo());
+    undoList.push_back(undo());
+    emit onUndoDone();
 }
 
-void Manager::whiteUndo() {
-  if (getCurPlayer().unit == Unit::White)
-    undo();
-  undo();
+void Manager::whiteUndo()
+{
+    undoList.clear();
+    if (getCurPlayer().unit == Unit::Black) undoList.push_back(undo());
+    undoList.push_back(undo());
+    emit onUndoDone();
 }
 
 Coordinate Manager::compute(Unit unit)

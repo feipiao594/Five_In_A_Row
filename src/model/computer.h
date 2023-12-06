@@ -10,6 +10,7 @@ public:
 
     void update(Coordinate, Unit);
     void remove(Coordinate, Unit);
+    void getMax(Unit);
 
 private:
 
@@ -18,10 +19,12 @@ private:
     int posGroup[BOARD_SIZE - 4][BOARD_SIZE - 4][2];
     int negGroup[BOARD_SIZE - 4][BOARD_SIZE - 4][2];
 
-    void fitHorGroup(Coordinate, void(*)(int[]));
-    void fitVerGroup(Coordinate, void(*)(int[]));
-    void fitPosGroup(Coordinate, void(*)(int[]));
-    void fitNegGroup(Coordinate, void(*)(int[]));
+    void fitGroup(Coordinate, int, int);
+
+    void fitHorGroup(Coordinate, int, int);
+    void fitVerGroup(Coordinate, int, int);
+    void fitPosGroup(Coordinate, int, int);
+    void fitNegGroup(Coordinate, int, int);
 
 };
 
