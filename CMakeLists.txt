@@ -20,6 +20,7 @@ file(GLOB_RECURSE SOURCE_FILES
 
 add_executable(WUZIQI
   ${SOURCE_FILES}
+  model/board.cpp model/board.h model/coordinate.cpp model/coordinate.h model/manager.cpp model/manager.h model/player.cpp model/player.h
 )
 target_link_libraries(WUZIQI
     Qt6::Core
