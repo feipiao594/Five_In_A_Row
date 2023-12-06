@@ -1,15 +1,12 @@
-#include "ui.h"
-#include "record.h"
+#include "ui/selectionui.h"
+#include "ui/mainui.h"
 
 #include <QApplication>
 
-Board board;
-Record record;
 
 int main(int argc, char *argv[])
 {
     QApplication a(argc, argv);
-    MainUI w;
-    w.show();
+    SelectionUI::getInstance()->show();
     return a.exec();
 }
