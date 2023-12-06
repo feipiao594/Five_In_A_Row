@@ -1,5 +1,6 @@
 #include "mainui.h"
 #include "../controller/boardcontroller.h"
+#include "../model/manager.h"
 #include "selectionui.h"
 
 MainUI::MainUI() : mainLayout(new QHBoxLayout) {
@@ -44,13 +45,23 @@ MainUI::MainUI() : mainLayout(new QHBoxLayout) {
 
   BoardController::getInstance()->setParent(this);
 
+  connect(Manager::getInstance(), &Manager::onDropped,
+          BoardController::getInstance(),
+          &BoardController::onDroppedController);
+
   connect(BoardController::getInstance(), &BoardController::updateDropPiece,
           this, &MainUI::showDropPiece);
-  on_game_over(Unit::White);
+  connect(BoardController::getInstance(), &BoardController::updateWinner, this,
+          &MainUI::onGameOver);
+
+  connect(retract_black, &QPushButton::clicked, this, &MainUI::blackRetract);
+  connect(retract_white, &QPushButton::clicked, this, &MainUI::whiteRetract);
 }
 
-void MainUI::on_game_over(Unit color) {
+void MainUI::onGameOver(Unit color) {
   QString message;
+  disconnect(retract_black, &QPushButton::clicked, this, &MainUI::blackRetract);
+  disconnect(retract_white, &QPushButton::clicked, this, &MainUI::whiteRetract);
   connect(retract_black, &QPushButton::clicked, this, &MainUI::restartGame);
   retract_black->setText("重新开始");
   text_white->hide();
@@ -63,7 +74,9 @@ void MainUI::on_game_over(Unit color) {
   case Unit::White:
     message = "白方胜利！";
     break;
-  default:;
+  case Unit::Empty:
+    message = "和局！";
+    break;
   }
 
   text_black->setText(message + "\n游戏已结束，要再来一局吗？");
@@ -72,6 +85,9 @@ void MainUI::on_game_over(Unit color) {
 void MainUI::restartGame() {
   retract_black->hide();
   clearPieceColor();
+  disconnect(retract_black, &QPushButton::clicked, this, &MainUI::restartGame);
+  connect(retract_black, &QPushButton::clicked, this, &MainUI::blackRetract);
+  connect(retract_white, &QPushButton::clicked, this, &MainUI::whiteRetract);
   retract_white->setText("悔棋");
   retract_black->setText("悔棋");
   text_black->setText("黑方");

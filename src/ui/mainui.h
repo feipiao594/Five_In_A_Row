@@ -32,6 +32,9 @@ protected:
 public slots:
   void showDropPiece();
   void restartGame();
+  void onGameOver(Unit color);
+  void blackRetract() { qDebug() << "blackRetract"; };
+  void whiteRetract() { qDebug() << "whiteRetract"; };
 
 private:
   Unit turnColor;
@@ -44,7 +47,6 @@ private:
   MainUI();
 
 public:
-  void on_game_over(Unit color);
   void setPieceColor(std::pair<int, int> pos, Unit color) {
     auto [x, y] = pos;
     pieces[x][y]->setColor(color);

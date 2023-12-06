@@ -1,4 +1,5 @@
 #include "selectionui.h"
+#include "../model/manager.h"
 #include "mainui.h"
 
 #include <QMessageBox>
@@ -17,6 +18,9 @@ SelectionUI::SelectionUI()
   aiModeButton->setFixedWidth(90);
   mainLayout->addWidget(personModeButton);
   mainLayout->addWidget(aiModeButton);
+
+  Manager::getInstance()->setParent(this);
+
   connect(personModeButton, &QPushButton::clicked, this,
           &SelectionUI::clickedAiMode);
   connect(aiModeButton, &QPushButton::clicked, this,

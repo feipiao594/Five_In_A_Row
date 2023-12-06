@@ -1,8 +1,10 @@
 #include "manager.h"
 
-Coordinate dirVector[4] = {{0,1}, {1,0}, {-1,1}, {1,1}};
+Coordinate dirVector[4] = {{0, 1}, {1, 0}, {-1, 1}, {1, 1}};
 
-Player Manager::getCurPlayer() { return ((getTotalStep() & 1) == 0) ? black : white; }
+Player Manager::getCurPlayer() {
+  return ((getTotalStep() & 1) == 0) ? black : white;
+}
 
 int Manager::getTotalStep() { return record.size(); }
 
@@ -107,8 +109,4 @@ void Manager::whiteUndo()
     emit onUndoDone();
 }
 
-Coordinate Manager::compute(Unit unit)
-{
-    return Coordinate();
-}
-
+Coordinate Manager::compute(Unit unit) { return Coordinate(); }

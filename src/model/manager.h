@@ -8,20 +8,26 @@
 #include "coordinate.h"
 #include "player.h"
 
-class Manager : public QObject
-{
-    Q_OBJECT
+class Manager : public QObject {
+  Q_OBJECT
 
 public:
   Manager(bool, bool);
 
-    Player getCurPlayer();
+  Player getCurPlayer();
 
     int getTotalStep();
     Unit getCurColor();
     Unit getWinner();
     Coordinate getLatestCoord();
     QVector<Coordinate> getUndoList();
+
+  static Manager *getInstance() {
+    static Manager *singleton = nullptr;
+    if (!singleton)
+      singleton = new Manager(false, false);
+    return singleton;
+  }
 
 signals:
 

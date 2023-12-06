@@ -4,6 +4,7 @@
 #include <QObject>
 #include <utility>
 
+#include "../model/manager.h"
 #include "../model/resource.h"
 
 class BoardController : public QObject {
@@ -16,10 +17,21 @@ class BoardController : public QObject {
 
 signals:
   void updateDropPiece();
+  void updateWinner(Unit);
 public slots:
-  void setDropPieceSuccessful();
+  void onGameOverController() {
+    emit updateWinner(Manager::getInstance()->getWinner());
+  }
+  void onDroppedController() {
+    //    current_drop_x = x;
+    //    current_drop_y = y;
+    current_drop_color = Manager::getInstance()->getCurColor();
+    whoTurn = current_drop_color == Unit::Black ? Unit::White : Unit::Black;
+    setDropPieceSuccessful();
+  }
 
 public:
+  void setDropPieceSuccessful();
   void pieceClicked(int x, int y);
   BoardController() : current_drop_x(-1), current_drop_y(-1) {
     whoTurn = Unit::Black;
