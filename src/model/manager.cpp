@@ -10,6 +10,10 @@ Unit Manager::getCurColor() { return getCurPlayer().unit; }
 
 Unit Manager::getWinner() { return winner; }
 
+Coordinate Manager::getLatestCoord() { return record.top(); }
+
+QVector<Coordinate> Manager::getUndoList() { return undoList; };
+
 Manager::Manager(bool isBlackComputer, bool isWhiteComputer)
 {
     board = Board();
@@ -75,21 +79,27 @@ void Manager::drop(Coordinate coord)
     else emit onOverlap();
 }
 
-void Manager::undo()
+Coordinate Manager::undo()
 {
-    if (!record.empty()) board.setUnit(record.pop(), Unit::Empty);
+    Coordinate coord = record.pop();
+    if (!record.empty()) board.setUnit(coord, Unit::Empty);
+    return coord;
 }
 
 void Manager::blackUndo()
 {
-    if (getCurPlayer().unit == Unit::Black) undo();
-    undo();
+    undoList.clear();
+    if (getCurPlayer().unit == Unit::Black) undoList.push_back(undo());
+    undoList.push_back(undo());
+    emit onUndoDone();
 }
 
 void Manager::whiteUndo()
 {
-    if (getCurPlayer().unit == Unit::White) undo();
-    undo();
+    undoList.clear();
+    if (getCurPlayer().unit == Unit::Black) undoList.push_back(undo());
+    undoList.push_back(undo());
+    emit onUndoDone();
 }
 
 Coordinate Manager::compute(Unit unit)

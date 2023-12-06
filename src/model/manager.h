@@ -4,6 +4,7 @@
 #include <QStack>
 
 #include "board.h"
+#include "computer.h"
 #include "coordinate.h"
 #include "player.h"
 
@@ -20,12 +21,15 @@ public:
     int getTotalStep();
     Unit getCurColor();
     Unit getWinner();
+    Coordinate getLatestCoord();
+    QVector<Coordinate> getUndoList();
 
 signals:
 
     void onOverlap();
     void onDropped();
     void onGameOver();
+    void onUndoDone();
 
 public slots:
 
@@ -38,13 +42,15 @@ private:
     Board board;
     Player black, white;
     QStack<Coordinate> record;
+    Computer computer;
 
     Unit winner;
+    QVector<Coordinate> undoList;
 
     bool isCoordValid(Coordinate);
     bool isWin(Coordinate);
 
-    void undo();
+    Coordinate undo();
 
     Coordinate compute(Unit);
 
