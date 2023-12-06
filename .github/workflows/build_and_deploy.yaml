@@ -65,7 +65,6 @@ jobs:
           plugins: qt appimage
 
       - name: Package
-        if: startsWith(github.event.ref, 'refs/tags/')
         env:
           EXTRA_QT_PLUGINS: qt5compat
         run: |
@@ -80,13 +79,11 @@ jobs:
           mv ${{ env.fileName }}-*.AppImage ${{ env.TARGET }}.AppImage
           
       - uses: actions/upload-artifact@v2
-        if: startsWith(github.event.ref, 'refs/tags/')
         with:
           name: FIVE_IN_A_ROW_AppImage
           path: ${{ env.TARGET }}.AppImage
 
       - name: uploadRelease
-        if: startsWith(github.event.ref, 'refs/tags/')
         uses: svenstaro/upload-release-action@v2
         with:
           repo_token: ${{ secrets.GITHUB_TOKEN }}
@@ -131,18 +128,15 @@ jobs:
           cmake --build . --target all --config Release --parallel
 
       - name: Package
-        if: startsWith(github.event.ref, 'refs/tags/')
         run: |
           macdeployqt bin/release/FIVE_IN_A_ROW.app -qmldir=. -verbose=1 -dmg
        
       - uses: actions/upload-artifact@v2
-        if: startsWith(github.event.ref, 'refs/tags/')
         with:
           name: FIVE_IN_A_ROW_MacOS
           path: bin/release/${{ env.TARGET }}.app
 
       - name: uploadRelease
-        if: startsWith(github.event.ref, 'refs/tags/')
         uses: svenstaro/upload-release-action@v2
         with:
           repo_token: ${{ secrets.GITHUB_TOKEN }}
@@ -192,7 +186,6 @@ jobs:
           echo vcToolsRedistDir=%VCToolsRedistDir% >> %GITHUB_ENV%
           
       - name: package
-        if: startsWith(github.event.ref, 'refs/tags/')
         id: package      
         env:
           archiveName: ${{ env.fileName }}-${{ matrix.qt_arch }}-${{ matrix.qt_ver }}
@@ -205,19 +198,16 @@ jobs:
            echo "::set-output name=packageName::$name"   
 
       - uses: actions/upload-artifact@v2
-        if: startsWith(github.event.ref, 'refs/tags/')
         with:
           name: ${{ steps.package.outputs.packageName }}
           path: dist          
           
       - name: inno setup install
-        if: startsWith(github.event.ref, 'refs/tags/')
         uses: zhuzichu520/inno-setup-action@v1.0.1
         with: 
           filepath: ./action-cli/InstallerScript.iss
           
       - name: uploadRelease
-        if: startsWith(github.event.ref, 'refs/tags/')
         uses: svenstaro/upload-release-action@v2
         with:
           repo_token: ${{ secrets.GITHUB_TOKEN }}
