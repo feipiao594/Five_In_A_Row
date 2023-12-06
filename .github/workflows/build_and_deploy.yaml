@@ -129,7 +129,7 @@ jobs:
 
       - name: Package
         run: |
-          macdeployqt bin/release/FIVE_IN_A_ROW.app -qmldir=. -verbose=1 -dmg
+          macdeployqt bin/release/FIVE_IN_A_ROW.app -verbose=1 -dmg
        
       - uses: actions/upload-artifact@v2
         with:
@@ -178,7 +178,7 @@ jobs:
           ninja --version
           mkdir build
           cd build
-          cmake -DCMAKE_MESSAGE_LOG_LEVEL=STATUS -DCMAKE_PREFIX_PATH=D:\a\FluentUI\Qt\6.5.3\msvc2019_64 -DCMAKE_C_COMPILER=cl -DCMAKE_CXX_COMPILER=cl -DCMAKE_BUILD_TYPE=Release -GNinja ..
+          cmake -DCMAKE_MESSAGE_LOG_LEVEL=STATUS -DCMAKE_C_COMPILER=cl -DCMAKE_CXX_COMPILER=cl -DCMAKE_BUILD_TYPE=Release -GNinja ..
           cmake --build . --target all --config Release --parallel
           echo winSdkDir=%WindowsSdkDir% >> %GITHUB_ENV%
           echo winSdkVer=%WindowsSdkVersion% >> %GITHUB_ENV%
