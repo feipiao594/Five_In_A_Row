@@ -60,6 +60,7 @@ void Manager::drop(Coordinate coord)
         Player player = getCurPlayer();
         board.setUnit(coord, player.unit);
         record.push(coord);
+        computer.update(coord, player.unit);
         if (isWin(coord))
         {
             winner = player.unit;
@@ -81,8 +82,14 @@ void Manager::drop(Coordinate coord)
 
 Coordinate Manager::undo()
 {
-    Coordinate coord = record.pop();
-    if (!record.empty()) board.setUnit(coord, Unit::Empty);
+    Coordinate coord;
+    if (!record.empty())
+    {
+        coord = record.pop();
+        Unit unit = board.getUnit(coord);
+        board.setUnit(coord, Unit::Empty);
+        computer.remove(coord, unit);
+    }
     return coord;
 }
 
