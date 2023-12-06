@@ -7,10 +7,12 @@
 
 #include "../model/resource.h"
 
+static bool flag = false;
+
 class PieceButton : public QPushButton {
     Q_OBJECT
 
-    OCCUPATION color;
+    Unit color;
     bool canhover = true;
     int n;
     int x;
@@ -18,7 +20,7 @@ class PieceButton : public QPushButton {
 
 public:
     PieceButton(const int _x, const int _y, const int n, QWidget *parent = nullptr);
-    void setColor(OCCUPATION color);
+    void setColor(Unit color);
     void clearColor();
 
 protected:

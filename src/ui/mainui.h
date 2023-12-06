@@ -18,7 +18,7 @@ private:
     QGridLayout *game_region;
     QWidget *board;
     QLabel *text_black, *text_white;
-    PieceButton *pieces[N][N];
+    PieceButton *pieces[BOARD_SIZE][BOARD_SIZE];
     QPushButton *start, *retract_black, *retract_white;
 
 signals:

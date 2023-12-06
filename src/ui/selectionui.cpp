@@ -4,11 +4,15 @@
 #include <QMessageBox>
 #include <QMouseEvent>
 
-SelectionUI::SelectionUI() : mainLayout(new QVBoxLayout), aiModeButton(new QPushButton("双人游戏")),
-      personModeButton(new QPushButton("人机对战")) {
+SelectionUI::SelectionUI() : mainLayout(new QVBoxLayout),
+      personModeButton(new QPushButton("双人游戏")), aiModeButton(new QPushButton("人机对战")) {
     setAttribute(Qt::WA_DeleteOnClose);
     setFixedSize(QSize(200,150));
     setLayout(mainLayout);
+    mainLayout->setAlignment(Qt::AlignHCenter);
+    mainLayout->setSpacing(35);
+    personModeButton->setFixedWidth(90);
+    aiModeButton->setFixedWidth(90);
     mainLayout->addWidget(personModeButton);
     mainLayout->addWidget(aiModeButton);
     connect(personModeButton,&QPushButton::clicked,this,&SelectionUI::clickedAiMode);
@@ -18,11 +22,6 @@ SelectionUI::SelectionUI() : mainLayout(new QVBoxLayout), aiModeButton(new QPush
     connect(this,&SelectionUI::clickedAiMode,this,&SelectionUI::startGame);
     connect(this,&SelectionUI::clickedPersonMode,this,&SelectionUI::startGame);
     /////////////////TEST
-}
-
-void SelectionUI::endProgram() {
-    //qDebug()<<"close SelectionUI";
-    close();
 }
 
 void SelectionUI::startGame() {

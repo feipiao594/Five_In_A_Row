@@ -2,15 +2,7 @@
 #define BOARD_H
 
 #include "coordinate.h"
-
-#define BOARD_SIZE 15
-
-enum Unit
-{
-    Empty = 0,
-    Black = -1,
-    White = 1,
-};
+#include "resource.h"
 
 class Board
 {
