@@ -1,6 +1,6 @@
 cmake_minimum_required(VERSION 3.14)
 
-project(WUZIQI LANGUAGES CXX)
+project(FIVE_IN_A_ROW LANGUAGES CXX)
 
 set(CMAKE_AUTOUIC ON)
 set(CMAKE_AUTOMOC ON)
@@ -30,11 +30,11 @@ file(GLOB_RECURSE SOURCE_FILES
 )
 
 
-add_executable(WUZIQI
+add_executable(FIVE_IN_A_ROW
     ${SOURCE_FILES}
     resource.qrc
 )
-target_link_libraries(WUZIQI
+target_link_libraries(FIVE_IN_A_ROW
     Qt6::Core
     Qt6::Widgets
 )
