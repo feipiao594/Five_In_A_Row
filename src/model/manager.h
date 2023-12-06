@@ -54,7 +54,7 @@ private:
 
     Coordinate undo();
 
-    Coordinate compute(Unit);
+    Coordinate compute();
 
 };
 

@@ -60,6 +60,7 @@ void Manager::drop(Coordinate coord)
         Player player = curPlayer();
         board.setUnit(coord, player.unit);
         record.push(coord);
+        computer.update(coord, player.unit);
         emit onDropped();
         if (isWin(coord))
         {
@@ -127,8 +128,8 @@ void Manager::setComputer(bool isBlackComputer, bool isWhiteComputer)
     white.isComputer = isWhiteComputer;
 }
 
-Coordinate Manager::compute(Unit unit)
+Coordinate Manager::compute()
 {
-    return Coordinate();
+    return computer.getBestCoord(curPlayer().unit);
 }
 
