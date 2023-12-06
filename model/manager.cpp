@@ -54,35 +54,41 @@ void Manager::drop(Coordinate coord)
         record.push(coord);
         if (isWin(coord))
         {
-            if (player.unit == Unit::Black) onBlackWin();
-            else onWhiteWin();
+            if (player.unit == Unit::Black)
+                emit onBlackWin();
+            else
+                emit onWhiteWin();
         }
-        if (getTotalStep() >= BOARD_SIZE * BOARD_SIZE) onTie();
+        if (getTotalStep() >= BOARD_SIZE * BOARD_SIZE) emit onTie();
         else
         {
             player = getCurPlayer();
-            if (player.unit == Unit::Black) onBlackTurn();
-            else onWhiteTurn();
+            if (player.unit == Unit::Black)
+                emit onBlackTurn();
+            else
+                emit onWhiteTurn();
+
             if (player.isComputer) drop(compute(player.unit));
         }
     }
+    else emit onOverlap();
 }
 
-void Manager::Undo()
+void Manager::undo()
 {
     if (!record.empty()) board.setUnit(record.pop(), Unit::Empty);
 }
 
 void Manager::blackUndo()
 {
-    if (getCurPlayer().unit == Unit::Black) Undo();
-    Undo();
+    if (getCurPlayer().unit == Unit::Black) undo();
+    undo();
 }
 
 void Manager::whiteUndo()
 {
-    if (getCurPlayer().unit == Unit::White) Undo();
-    Undo();
+    if (getCurPlayer().unit == Unit::White) undo();
+    undo();
 }
 
 Coordinate Manager::compute(Unit unit)
