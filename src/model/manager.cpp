@@ -2,13 +2,11 @@
 
 Coordinate dirVector[4] = {{0, 1}, {1, 0}, {-1, 1}, {1, 1}};
 
-Player Manager::getCurPlayer() {
-  return ((getTotalStep() & 1) == 0) ? black : white;
-}
+Player Manager::curPlayer() { return ((getTotalStep() & 1) == 0) ? black : white; }
 
 int Manager::getTotalStep() { return record.size(); }
 
-Unit Manager::getCurColor() { return getCurPlayer().unit; }
+Unit Manager::getCurColor() { return curPlayer().unit; }
 
 Unit Manager::getWinner() { return winner; }
 
@@ -57,10 +55,10 @@ void Manager::drop(Coordinate coord)
 {
     if (board.getUnit(coord) == Unit::Empty)
     {
-        Player player = getCurPlayer();
+        Player player = curPlayer();
         board.setUnit(coord, player.unit);
         record.push(coord);
-        computer.update(coord, player.unit);
+        emit onDropped();
         if (isWin(coord))
         {
             winner = player.unit;
@@ -71,18 +69,13 @@ void Manager::drop(Coordinate coord)
             winner = Unit::Empty;
             emit onGameOver();
         }
-        else
-        {
-            player = getCurPlayer();
-            emit onDropped();
-        }
     }
     else emit onOverlap();
 }
 
 Coordinate Manager::undo()
 {
-    Coordinate coord;
+    Coordinate coord = Coordinate(-1, -1);
     if (!record.empty())
     {
         coord = record.pop();
@@ -96,17 +89,54 @@ Coordinate Manager::undo()
 void Manager::blackUndo()
 {
     undoList.clear();
-    if (getCurPlayer().unit == Unit::Black) undoList.push_back(undo());
-    undoList.push_back(undo());
+    if (curPlayer().unit == Unit::Black)
+    {
+        Coordinate coord = undo();
+        if (coord.row >= 0) undoList.push_back(coord);
+    }
+    Coordinate coord = undo();
+    if (coord.row >= 0) undoList.push_back(coord);
     emit onUndoDone();
 }
 
 void Manager::whiteUndo()
 {
     undoList.clear();
-    if (getCurPlayer().unit == Unit::Black) undoList.push_back(undo());
-    undoList.push_back(undo());
+    if (curPlayer().unit == Unit::White)
+    {
+        Coordinate coord = undo();
+        if (coord.row >= 0) undoList.push_back(coord);
+    }
+    Coordinate coord = undo();
+    if (coord.row >= 0) undoList.push_back(coord);
     emit onUndoDone();
 }
 
-Coordinate Manager::compute(Unit unit) { return Coordinate(); }
+void Manager::restart()
+{
+    board.clear();
+    record.clear();
+    computer.clear();
+}
+
+void Manager::setComputer(bool isBlackComputer, bool isWhiteComputer)
+{
+    black.isComputer = isBlackComputer;
+    white.isComputer = isWhiteComputer;
+}
+
+void Manager::restart()
+{
+    board.clear();
+    record.clear();
+    computer.clear();
+}
+
+void Manager::setComputer(bool isBlackComputer, bool isWhiteComputer)
+{
+    black.isComputer = isBlackComputer;
+    white.isComputer = isWhiteComputer;
+}
+
+Coordinate Manager::compute(Unit unit) { 
+  return Coordinate(); }

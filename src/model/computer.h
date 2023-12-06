@@ -8,9 +8,11 @@ public:
 
     Computer();
 
+    void clear();
+
     void update(Coordinate, Unit);
     void remove(Coordinate, Unit);
-    void getMax(Unit);
+    Coordinate getBestCoord(Unit);
 
 private:
 
@@ -19,12 +21,15 @@ private:
     int posGroup[BOARD_SIZE - 4][BOARD_SIZE - 4][2];
     int negGroup[BOARD_SIZE - 4][BOARD_SIZE - 4][2];
 
-    void fitGroup(Coordinate, int, int);
-
     void fitHorGroup(Coordinate, int, int);
     void fitVerGroup(Coordinate, int, int);
     void fitPosGroup(Coordinate, int, int);
     void fitNegGroup(Coordinate, int, int);
+
+    int horGroupScore(Coordinate);
+    int verGroupScore(Coordinate);
+    int posGroupScore(Coordinate);
+    int negGroupScore(Coordinate);
 
 };
 
