@@ -31,20 +31,20 @@ void Computer::fitGroup(Coordinate coord, int unit, int weight) {
 
 void Computer::fitHorGroup(Coordinate coord, int unit, int weight) {
   int startCol = std::max(coord.col - 4, 0);
-  int endCol = std::min(coord.col, BOARD_SIZE - 5);
+  int endCol = std::min(coord.col, BOARD_SIZE - 1 - 4);
   for (int c = startCol; c <= endCol; c++)
     horGroup[coord.row][c][unit] += weight;
 }
 
 void Computer::fitVerGroup(Coordinate coord, int unit, int weight) {
   int startRow = std::max(coord.row - 4, 0);
-  int endRow = std::min(coord.row, BOARD_SIZE - 5);
+  int endRow = std::min(coord.row, BOARD_SIZE - 1 - 4);
   for (int r = startRow; r <= endRow; r++)
     verGroup[r][coord.col][unit] += weight;
 }
 
 void Computer::fitPosGroup(Coordinate coord, int unit, int weight) {
-  int startRow = std::min(coord.row + 4, BOARD_SIZE - 5) - 4;
+  int startRow = std::min(coord.row + 4, BOARD_SIZE - 1 - 4) - 4;
   int col = coord.col + coord.row - 4 - startRow;
   int endRow = std::max(coord.row - 4, 0);
   for (int r = startRow; r >= endRow; r--) {
@@ -57,7 +57,7 @@ void Computer::fitPosGroup(Coordinate coord, int unit, int weight) {
 void Computer::fitNegGroup(Coordinate coord, int unit, int weight) {
   int startRow = std::max(coord.row - 4, 0);
   int col = coord.col - coord.row + startRow;
-  int endRow = std::min(coord.row, BOARD_SIZE - 5);
+  int endRow = std::min(coord.row, BOARD_SIZE - 1 - 4);
   for (int r = startRow; r <= endRow; r++) {
     if (col >= 0 && col < BOARD_SIZE - 4)
       negGroup[r][col][unit] += weight;
@@ -104,7 +104,7 @@ int Computer::count2Score(std::pair<int, int> counts, Unit unit) {
 int Computer::horGroupScore(Coordinate coord, Unit unit) {
   int score = 0;
   int startCol = std::max(coord.col - 4, 0);
-  int endCol = std::min(coord.col, BOARD_SIZE - 5);
+  int endCol = std::min(coord.col, BOARD_SIZE - 1 - 4);
   for (int c = startCol; c <= endCol; c++)
     score += count2Score(
         std::make_pair(horGroup[coord.row][c][0], horGroup[coord.row][c][1]),
@@ -115,7 +115,7 @@ int Computer::horGroupScore(Coordinate coord, Unit unit) {
 int Computer::verGroupScore(Coordinate coord, Unit unit) {
   int score = 0;
   int startRow = std::max(coord.row - 4, 0);
-  int endRow = std::min(coord.row, BOARD_SIZE - 5);
+  int endRow = std::min(coord.row, BOARD_SIZE - 1 - 4);
   for (int r = startRow; r <= endRow; r++)
     score += count2Score(
         std::make_pair(verGroup[r][coord.col][0], verGroup[r][coord.col][1]),
@@ -125,7 +125,7 @@ int Computer::verGroupScore(Coordinate coord, Unit unit) {
 
 int Computer::posGroupScore(Coordinate coord, Unit unit) {
   int score = 0;
-  int startRow = std::min(coord.row + 4, BOARD_SIZE - 5) - 4;
+  int startRow = std::min(coord.row + 4, BOARD_SIZE - 1 - 4) - 4;
   int col = coord.col + coord.row - 4 - startRow;
   int endRow = std::max(coord.row - 4, 0);
   for (int r = startRow; r >= endRow; r--) {
@@ -141,7 +141,7 @@ int Computer::negGroupScore(Coordinate coord, Unit unit) {
   int score = 0;
   int startRow = std::max(coord.row - 4, 0);
   int col = coord.col - coord.row + startRow;
-  int endRow = std::min(coord.row, BOARD_SIZE - 5);
+  int endRow = std::min(coord.row, BOARD_SIZE - 1 - 4);
   for (int r = startRow; r <= endRow; r++) {
     if (col >= 0 && col < BOARD_SIZE - 4)
       score += count2Score(
@@ -179,7 +179,7 @@ Coordinate Computer::getBestCoord(Unit unit) {
                 posGroupScore(coord, unit) + negGroupScore(coord, unit);
 
     if (score < max)
-      candidateList.remove(i);
+      candidateList.remove(i--);
   }
 
   std::random_device seed;
