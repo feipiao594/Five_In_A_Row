@@ -5,7 +5,6 @@
 #include <utility>
 
 #include "../model/manager.h"
-#include "../model/resource.h"
 
 class BoardController : public QObject {
   Q_OBJECT
@@ -14,6 +13,7 @@ class BoardController : public QObject {
   int current_drop_y;
   Unit current_drop_color;
   Unit whoTurn;
+  bool isPersonTurn;
 
 signals:
   void updateDropPiece();
@@ -39,6 +39,7 @@ public slots:
   }
 
 public:
+  bool getIsYourTurn() { return isPersonTurn; };
   void setDropPieceSuccessful();
   void pieceClicked(int x, int y);
   BoardController() : current_drop_x(-1), current_drop_y(-1) {

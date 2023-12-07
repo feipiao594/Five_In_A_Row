@@ -1,5 +1,6 @@
 #include "mainui.h"
 #include "../controller/boardcontroller.h"
+#include "../controller/selectioncontroller.h"
 #include "../model/manager.h"
 #include "selectionui.h"
 
@@ -129,24 +130,34 @@ void MainUI::clearPiecePos(int x, int y) { pieces[x][y]->clearColor(); }
 void MainUI::restartGame() {
   retract_black->hide();
   clearPieceColor();
+
   disconnect(retract_black, &QPushButton::clicked, this, &MainUI::restartGame);
+
   connect(retract_black, &QPushButton::clicked, this, &MainUI::blackRetract);
   connect(retract_white, &QPushButton::clicked, this, &MainUI::whiteRetract);
+
   retract_white->setText("悔棋");
   retract_black->setText("悔棋");
+
   auto blackImg = Resource::getInstance()->color2pixmap(Unit::Black, false);
   blackImg = blackImg.scaled(60, 60, Qt::KeepAspectRatio);
-  img_black->setPixmap(blackImg);
+
   auto whiteImg = Resource::getInstance()->color2pixmap(Unit::White, false);
   whiteImg = whiteImg.scaled(60, 60, Qt::KeepAspectRatio);
+
+  img_black->setPixmap(blackImg);
   img_white->setPixmap(whiteImg);
+
   text_black->setText("黑方");
   text_white->setText("白方");
-  text_black->setText("黑方");
-  text_white->setText("白方");
+
+  retract_white->setEnabled(true);
+  retract_black->setEnabled(true);
+
   img_white->show();
   text_black->show();
   text_white->show();
+
   retract_white->show();
   retract_black->show();
   for (int i = 0; i < BOARD_SIZE; i++)
@@ -157,6 +168,8 @@ void MainUI::restartGame() {
   BoardController::getInstance()->restartBoardController();
   SelectionUI::getInstance()->showSelection();
 }
+
+void MainUI::changeAiModeView() {}
 
 void MainUI::piecePushed(int x, int y) {
   BoardController::getInstance()->pieceClicked(x, y);

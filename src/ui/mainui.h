@@ -22,6 +22,7 @@ private:
   QPushButton *start, *retract_black, *retract_white;
 
 signals:
+  void onAiMode();
   void mainUIClosed();
   void onBlackRetract();
   void onWhiteRetract();
@@ -34,6 +35,7 @@ protected:
 
 public slots:
   void showDropPiece();
+  void changeAiModeView();
   void restartGame();
   void onGameOver(Unit color);
   void blackRetract() { emit onBlackRetract(); };
