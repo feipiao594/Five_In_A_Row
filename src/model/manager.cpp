@@ -2,17 +2,40 @@
 
 Coordinate dirVector[4] = {{0,1}, {1,0}, {-1,1}, {1,1}};
 
-Player Manager::curPlayer() { return ((getTotalStep() & 1) == 0) ? black : white; }
+Player Manager::curPlayer()
+{
+    return ((getTotalStep() & 1) == 0) ? black : white;
+}
 
-int Manager::getTotalStep() { return record.size(); }
+int Manager::getTotalStep()
+{
+    return record.size();
+}
 
-Unit Manager::getCurColor() { return curPlayer().unit; }
+Unit Manager::getCurColor()
+{
+    return curPlayer().unit;
+}
 
-Unit Manager::getWinner() { return winner; }
+Unit Manager::getWinner()
+{
+    return winner;
+}
 
-Coordinate Manager::getLatestCoord() { return record.top(); }
+Coordinate Manager::getLatestCoord()
+{
+    return record.top();
+}
 
-QVector<Coordinate> Manager::getUndoList() { return undoList; };
+QVector<Coordinate> Manager::getUndoList()
+{
+    return undoList;
+}
+
+bool Manager::getIsPerson()
+{
+    return !curPlayer().isComputer;
+}
 
 Manager::Manager(bool isBlackComputer, bool isWhiteComputer)
 {
@@ -20,6 +43,7 @@ Manager::Manager(bool isBlackComputer, bool isWhiteComputer)
     black = Player(Unit::Black, isBlackComputer);
     white = Player(Unit::White, isWhiteComputer);
     record = QStack<Coordinate>();
+    computer = Computer(board);
 }
 
 bool Manager::isWin(Coordinate baseCoord)
@@ -72,6 +96,7 @@ void Manager::drop(Coordinate coord)
             winner = Unit::Empty;
             emit onGameOver();
         }
+        else if (!getIsPerson()) drop(compute());
     }
     else emit onOverlap();
 }
@@ -126,6 +151,8 @@ void Manager::setComputer(bool isBlackComputer, bool isWhiteComputer)
 {
     black.isComputer = isBlackComputer;
     white.isComputer = isWhiteComputer;
+
+    if (curPlayer().isComputer) drop(compute());
 }
 
 Coordinate Manager::compute()

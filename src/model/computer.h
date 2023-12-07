@@ -7,6 +7,7 @@ class Computer {
 public:
 
     Computer();
+    Computer(Board&);
 
     void clear();
 
@@ -15,6 +16,8 @@ public:
     Coordinate getBestCoord(Unit);
 
 private:
+
+    Board* board;
 
     int horGroup[BOARD_SIZE][BOARD_SIZE - 4][2];
     int verGroup[BOARD_SIZE - 4][BOARD_SIZE][2];

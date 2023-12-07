@@ -23,6 +23,7 @@ public:
     Unit getWinner();
     Coordinate getLatestCoord();
     QVector<Coordinate> getUndoList();
+    bool getIsPerson();
 
 signals:
 

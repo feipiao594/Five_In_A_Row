@@ -1,6 +1,14 @@
+#include <random>
+
 #include "computer.h"
 
 Computer::Computer() { clear(); }
+
+Computer::Computer(Board &board)
+{
+    this->board = &board;
+    clear();
+}
 
 void Computer::clear()
 {
@@ -46,11 +54,11 @@ void Computer::fitVerGroup(Coordinate coord, int unit, int weight)
 void Computer::fitPosGroup(Coordinate coord, int unit, int weight)
 {
     int startRow = std::min(coord.row + 4, BOARD_SIZE - 4) - 4;
-    int col = coord.col + coord.row - startRow;
+    int col = coord.col + coord.row - 4 - startRow;
     int endRow = std::max(coord.row - 4, 0);
     for (int r = startRow; r >= endRow; r--)
     {
-        if (col >= 0 && col < BOARD_SIZE && r != coord.row)
+        if (col >= 0 && col < BOARD_SIZE - 4 && r != coord.row)
             posGroup[r][col][unit] += weight;
         col++;
     }
@@ -61,9 +69,9 @@ void Computer::fitNegGroup(Coordinate coord, int unit, int weight)
     int startRow = std::max(coord.row - 4, 0);
     int col = coord.col - coord.row + startRow;
     int endRow = std::max(coord.row - 4, 0);
-    for (int r = startRow; r >= endRow; r++)
+    for (int r = startRow; r <= endRow; r++)
     {
-        if (col >= 0 && col < BOARD_SIZE && r != coord.row)
+        if (col >= 0 && col < BOARD_SIZE - 4 && r != coord.row)
             negGroup[r][col][unit] += weight;
         col++;
     }
@@ -127,11 +135,11 @@ int Computer::posGroupScore(Coordinate coord, Unit unit)
 {
     int score = 0;
     int startRow = std::min(coord.row + 4, BOARD_SIZE - 4) - 4;
-    int col = coord.col + coord.row - startRow;
+    int col = coord.col + coord.row - 4 - startRow;
     int endRow = std::max(coord.row - 4, 0);
     for (int r = startRow; r >= endRow; r--)
     {
-        if (col >= 0 && col < BOARD_SIZE && r != coord.row)
+        if (col >= 0 && col < BOARD_SIZE - 4 && r != coord.row)
             score += count2Score(posGroup[r][col], unit);
         col++;
     }
@@ -144,9 +152,9 @@ int Computer::negGroupScore(Coordinate coord, Unit unit)
     int startRow = std::max(coord.row - 4, 0);
     int col = coord.col - coord.row + startRow;
     int endRow = std::max(coord.row - 4, 0);
-    for (int r = startRow; r >= endRow; r++)
+    for (int r = startRow; r <= endRow; r++)
     {
-        if (col >= 0 && col < BOARD_SIZE && r != coord.row)
+        if (col >= 0 && col < BOARD_SIZE - 4 && r != coord.row)
             score += count2Score(negGroup[r][col], unit);
         col++;
     }
@@ -156,11 +164,14 @@ int Computer::negGroupScore(Coordinate coord, Unit unit)
 Coordinate Computer::getBestCoord(Unit unit)
 {
     int max = 0;
-    Coordinate bestCoord;
+    QVector<Coordinate> candidateList;
+
     for (int r = 0; r < BOARD_SIZE; r++)
     {
         for (int c = 0; c < BOARD_SIZE; c++)
         {
+            if (board->units[r][c] != Unit::Empty) continue;
+
             Coordinate coord = Coordinate(r, c);
 
             int score = horGroupScore(coord, unit) +
@@ -171,9 +182,15 @@ Coordinate Computer::getBestCoord(Unit unit)
             if (score > max)
             {
                 max = score;
-                bestCoord = coord;
+                candidateList.push_back(coord);
             }
         }
     }
-    return bestCoord;
+
+    std::random_device seed;
+    std::ranlux48 engine(seed());
+    std::uniform_int_distribution<> distrib(0, candidateList.size());
+    int random = distrib(engine);
+
+    return candidateList.at(random);
 }
