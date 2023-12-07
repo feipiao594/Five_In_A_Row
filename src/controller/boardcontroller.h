@@ -28,22 +28,28 @@ public slots:
     current_drop_y = Manager::getInstance()->getLatestCoord().row;
     current_drop_color = Manager::getInstance()->getCurColor();
     whoTurn = current_drop_color == Unit::Black ? Unit::White : Unit::Black;
+    isPersonTurn = Manager::getInstance()->getIsPerson();
     setDropPieceSuccessful();
   }
 
   void onUndoDoneController() {
     whoTurn = Manager::getInstance()->getCurColor();
+    isPersonTurn = Manager::getInstance()->getIsPerson();
     auto list = Manager::getInstance()->getUndoList();
     for (auto pos : list)
       emit updateUndo(pos.col, pos.row);
   }
 
 public:
-  bool getIsYourTurn() { return isPersonTurn; };
+  void updateIsYourTurn() {
+    isPersonTurn = Manager::getInstance()->getIsPerson();
+  }
+  bool getIsYourTurn() { return isPersonTurn; }
   void setDropPieceSuccessful();
   void pieceClicked(int x, int y);
   BoardController() : current_drop_x(-1), current_drop_y(-1) {
     whoTurn = Unit::Black;
+    isPersonTurn = false;
   };
   void dropPiece(int x, int y, Unit color) {
     current_drop_x = x;

@@ -22,6 +22,7 @@ SelectionUI::SelectionUI()
 
   Manager::getInstance()->setParent(this);
   Resource::getInstance()->setParent(this);
+  SelectionController::getInstance()->setParent(this);
 
   connect(personModeButton, &QPushButton::clicked, this,
           &SelectionUI::startGamePerson);
@@ -31,6 +32,9 @@ SelectionUI::SelectionUI()
   connect(this, &SelectionUI::clickedPersonMode,
           SelectionController::getInstance(),
           &SelectionController::selectPersonmode);
+  connect(SelectionController::getInstance(),
+          &SelectionController::updateAiMode, MainUI::getInstance(),
+          &MainUI::changeAiModeView);
 }
 
 void SelectionUI::startGame() {

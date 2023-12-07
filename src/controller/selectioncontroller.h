@@ -14,6 +14,9 @@ public slots:
   void selectAImode(Unit color);
   void selectPersonmode();
 
+signals:
+  void updateAiMode(Unit color);
+
 public:
   static SelectionController *getInstance() {
     static SelectionController *singleton = nullptr;

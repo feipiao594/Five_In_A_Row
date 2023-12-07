@@ -103,6 +103,8 @@ void MainUI::onGameOver(Unit color) {
   text_white->hide();
   img_white->hide();
   retract_white->hide();
+  retract_white->setEnabled(true);
+  retract_black->setEnabled(true);
 
   switch (color) {
   case Unit::Black:
@@ -169,7 +171,15 @@ void MainUI::restartGame() {
   SelectionUI::getInstance()->showSelection();
 }
 
-void MainUI::changeAiModeView() {}
+void MainUI::changeAiModeView(Unit color) {
+  if (color == Unit::Black) {
+    retract_white->setEnabled(false);
+    text_white->setText("白方(电脑)");
+  } else {
+    retract_black->setEnabled(false);
+    text_black->setText("黑方(电脑)");
+  }
+}
 
 void MainUI::piecePushed(int x, int y) {
   BoardController::getInstance()->pieceClicked(x, y);

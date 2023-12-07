@@ -35,7 +35,7 @@ protected:
 
 public slots:
   void showDropPiece();
-  void changeAiModeView();
+  void changeAiModeView(Unit color);
   void restartGame();
   void onGameOver(Unit color);
   void blackRetract() { emit onBlackRetract(); };

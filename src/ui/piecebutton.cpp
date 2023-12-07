@@ -23,7 +23,6 @@ void PieceButton::setColor(Unit color) {
   PieceButton::color = color;
   canhover = false;
   updateColor();
-  // wait for api
 }
 
 void PieceButton::updateColor() {
