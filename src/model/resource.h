@@ -1,12 +1,13 @@
 #ifndef RESOURCE_H
 #define RESOURCE_H
 
+#include <QDebug>
 #include <QObject>
 #include <QPainter>
 #include <QPixmap>
 #include <QString>
 
-#include "../ui/selectionui.h"
+// #include "../ui/selectionui.h"
 
 // 棋盘大小
 #define BOARD_SIZE 15
@@ -47,7 +48,6 @@ private:
   }
 
   Resource() {
-    setParent(SelectionUI::getInstance());
     whitePiece = getPiecePixMap(whitePieceUrl);
     blackPiece = getPiecePixMap(blackPieceUrl);
     emptyPiece = changeOpacity(getPiecePixMap(emptyPieceUrl), 0);

@@ -1,6 +1,6 @@
 cmake_minimum_required(VERSION 3.14)
 
-project(WUZIQI LANGUAGES CXX)
+project(FIVE_IN_A_ROW LANGUAGES CXX)
 
 set(CMAKE_AUTOUIC ON)
 set(CMAKE_AUTOMOC ON)
@@ -8,6 +8,12 @@ set(CMAKE_AUTORCC ON)
 
 set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
+
+if(CMAKE_BUILD_TYPE STREQUAL "Debug")
+    set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_SOURCE_DIR}/bin/debug)
+else()
+    set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_SOURCE_DIR}/bin/release)
+endif()
 
 find_package(Qt6 REQUIRED COMPONENTS Core Widgets)
 
@@ -24,11 +30,11 @@ file(GLOB_RECURSE SOURCE_FILES
 )
 
 
-add_executable(WUZIQI
+add_executable(FIVE_IN_A_ROW
     ${SOURCE_FILES}
     resource.qrc
 )
-target_link_libraries(WUZIQI
+target_link_libraries(FIVE_IN_A_ROW
     Qt6::Core
     Qt6::Widgets
 )

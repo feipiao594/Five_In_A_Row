@@ -23,7 +23,6 @@ void PieceButton::setColor(Unit color) {
   PieceButton::color = color;
   canhover = false;
   updateColor();
-  // wait for api
 }
 
 void PieceButton::updateColor() {
@@ -31,7 +30,7 @@ void PieceButton::updateColor() {
 }
 
 void PieceButton::buttonPushed() {
-  if (canhover) {
+  if (canhover && BoardController::getInstance()->getIsYourTurn()) {
     canhover = false;
     BoardController::getInstance()->pieceClicked(x, y);
   }
@@ -44,7 +43,7 @@ void PieceButton::setImage(const QPixmap &map) {
 }
 
 bool PieceButton::event(QEvent *event) {
-  if (canhover) {
+  if (canhover && BoardController::getInstance()->getIsYourTurn()) {
     switch (event->type()) {
     case QEvent::Enter:
       setImage(Resource::getInstance()->color2pixmap(

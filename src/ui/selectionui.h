@@ -5,6 +5,8 @@
 #include <QLayout>
 #include <QPushButton>
 
+#include "../model/resource.h"
+
 class SelectionUI : public QDialog {
   Q_OBJECT
 
@@ -14,19 +16,20 @@ private:
   QPushButton *aiModeButton;
 
 public slots:
-  void startGame();
+  void startGamePerson();
   void startGameAI();
   void showSelection();
   void endProgram() { close(); }
 
 signals:
-  void clickedAiMode();
+  void clickedAiMode(Unit color);
   void clickedPersonMode();
 
 private:
   SelectionUI();
 
 public:
+  void startGame();
   static SelectionUI *getInstance() {
     static SelectionUI *singleton = nullptr;
     if (!singleton)

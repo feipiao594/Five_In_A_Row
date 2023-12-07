@@ -14,13 +14,16 @@ Unit Manager::getWinner() { return winner; }
 
 Coordinate Manager::getLatestCoord() { return record.top(); }
 
-QVector<Coordinate> Manager::getUndoList() { return undoList; };
+QVector<Coordinate> Manager::getUndoList() { return undoList; }
+
+bool Manager::getIsPerson() { return !curPlayer().isComputer; }
 
 Manager::Manager(bool isBlackComputer, bool isWhiteComputer) {
   board = Board();
   black = Player(Unit::Black, isBlackComputer);
   white = Player(Unit::White, isWhiteComputer);
   record = QStack<Coordinate>();
+  computer = Computer(board);
 }
 
 bool Manager::isWin(Coordinate baseCoord) {
@@ -58,6 +61,7 @@ void Manager::drop(Coordinate coord) {
     Player player = curPlayer();
     board.setUnit(coord, player.unit);
     record.push(coord);
+    computer.update(coord, player.unit);
     emit onDropped();
     if (isWin(coord)) {
       winner = player.unit;
@@ -65,7 +69,8 @@ void Manager::drop(Coordinate coord) {
     } else if (getTotalStep() >= BOARD_SIZE * BOARD_SIZE) {
       winner = Unit::Empty;
       emit onGameOver();
-    }
+    } else if (!getIsPerson())
+      drop(compute());
   } else
     emit onOverlap();
 }
@@ -76,7 +81,7 @@ Coordinate Manager::undo() {
     coord = record.pop();
     Unit unit = board.getUnit(coord);
     board.setUnit(coord, Unit::Empty);
-    // computer.remove(coord, unit);
+    computer.remove(coord, unit);
   }
   return coord;
 }
@@ -92,6 +97,8 @@ void Manager::blackUndo() {
   if (coord.row >= 0)
     undoList.push_back(coord);
   emit onUndoDone();
+  if (!getIsPerson())
+    drop(compute());
 }
 
 void Manager::whiteUndo() {
@@ -105,6 +112,8 @@ void Manager::whiteUndo() {
   if (coord.row >= 0)
     undoList.push_back(coord);
   emit onUndoDone();
+  if (!getIsPerson())
+    drop(compute());
 }
 
 void Manager::restart() {
@@ -116,6 +125,11 @@ void Manager::restart() {
 void Manager::setComputer(bool isBlackComputer, bool isWhiteComputer) {
   black.isComputer = isBlackComputer;
   white.isComputer = isWhiteComputer;
+
+  if (curPlayer().isComputer)
+    drop(compute());
 }
 
-Coordinate Manager::compute(Unit unit) { return Coordinate(); }
+Coordinate Manager::compute() {
+  return computer.getBestCoord(curPlayer().unit);
+}
