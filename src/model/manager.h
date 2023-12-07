@@ -16,11 +16,12 @@ public:
 
     Player curPlayer();
 
-  int getTotalStep();
-  Unit getCurColor();
-  Unit getWinner();
-  Coordinate getLatestCoord();
-  QVector<Coordinate> getUndoList();
+    int getTotalStep();
+    Unit getCurColor();
+    Unit getWinner();
+    Coordinate getLatestCoord();
+    QVector<Coordinate> getUndoList();
+    bool getIsPerson();
 
   static Manager *getInstance() {
     static Manager *singleton = nullptr;
@@ -58,7 +59,8 @@ private:
 
   Coordinate undo();
 
-  Coordinate compute(Unit);
+    Coordinate compute();
+
 };
 
 #endif // MANAGER_H
