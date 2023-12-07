@@ -97,6 +97,8 @@ void Manager::blackUndo() {
   if (coord.row >= 0)
     undoList.push_back(coord);
   emit onUndoDone();
+  if (!getIsPerson())
+    drop(compute());
 }
 
 void Manager::whiteUndo() {
@@ -110,6 +112,8 @@ void Manager::whiteUndo() {
   if (coord.row >= 0)
     undoList.push_back(coord);
   emit onUndoDone();
+  if (!getIsPerson())
+    drop(compute());
 }
 
 void Manager::restart() {
