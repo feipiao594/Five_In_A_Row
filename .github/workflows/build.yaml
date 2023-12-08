@@ -38,7 +38,7 @@ jobs:
         uses: actions/upload-artifact@v3
         with:
           name: build-artifacts-${{ matrix.os }}
-          path: bin/release/${{ matrix.asset_name }}}
+          path: bin/release/${{ matrix.asset_name }}
 
       - name: Create release
         uses: svenstaro/upload-release-action@v2
