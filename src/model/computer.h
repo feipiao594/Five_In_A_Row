@@ -28,7 +28,7 @@ private:
   void fitPosGroup(Coordinate, int, int);
   void fitNegGroup(Coordinate, int, int);
 
-  int count2Score(std::pair<int, int>, Unit);
+  int count2Score(int, int, Unit);
 
   int horGroupScore(Coordinate, Unit);
   int verGroupScore(Coordinate, Unit);
