@@ -13,8 +13,11 @@ jobs:
         os: [windows-latest, ubuntu-latest, macos-latest]
         include:
           - os: windows-latest
+            asset_name: "Release/FIVE_IN_A_ROW.exe"
           - os: ubuntu-latest
+            asset_name: "FIVE_IN_A_ROW"
           - os: macos-latest
+            asset_name: "FIVE_IN_A_ROW"
 
     steps:
       - name: Checkout repository
@@ -35,11 +38,12 @@ jobs:
         uses: actions/upload-artifact@v3
         with:
           name: build-artifacts-${{ matrix.os }}
-          path: bin/release
+          path: bin/release/${{ matrix.asset_name }}}
 
       - name: Create release
-        uses: softprops/action-gh-release@v1
+        uses: svenstaro/upload-release-action@v2
         if: startsWith(github.ref, 'refs/tags/')
         with:
-          files: bin/release/*
-          token: ${{ secrets.GITHUB_TOKEN }}
+          file: bin/release/${{ matrix.asset_name }}
+          repo_token: ${{ secrets.GITHUB_TOKEN }}
+          tag: ${{ github.ref }}
