@@ -35,7 +35,7 @@ jobs:
       - name: Archive artifacts
         uses: actions/upload-artifact@v3
         with:
-          name: artifacts
+          name: build-artifacts-${{ matrix.os }}
           path: bin/release
 
       - name: Create release
