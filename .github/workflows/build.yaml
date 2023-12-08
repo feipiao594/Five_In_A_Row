@@ -1,4 +1,4 @@
-name: Build
+name: Build and release
 
 on:
   - push
@@ -6,7 +6,6 @@ on:
 
 jobs:
   build:
-
     runs-on: ${{ matrix.os }}
 
     strategy:
@@ -43,3 +42,4 @@ jobs:
         if: startsWith(github.ref, 'refs/tags/')
         with:
           files: bin/release/*
+          token: ${{ secrets.GITHUB_TOKEN }}
