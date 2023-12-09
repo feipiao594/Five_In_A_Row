@@ -33,11 +33,18 @@ file(GLOB_RECURSE SOURCE_FILES
     ${CMAKE_SOURCE_DIR}/src/ui/*.hpp
 )
 
-
-add_executable(FIVE_IN_A_ROW
-    ${SOURCE_FILES}
-    resource.qrc
-)
+if(WIN32)
+    add_executable(FIVE_IN_A_ROW
+        WIN32
+        ${SOURCE_FILES}
+        resource.qrc
+    )
+else()
+    add_executable(FIVE_IN_A_ROW
+        ${SOURCE_FILES}
+        resource.qrc
+    )
+endif()
 
 if(APPLE)
     set_target_properties(FIVE_IN_A_ROW PROPERTIES MACOSX_BUNDLE TRUE)
