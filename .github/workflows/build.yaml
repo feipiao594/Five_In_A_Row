@@ -16,16 +16,16 @@ jobs:
         include:
           - os: windows-latest
             os_name: windows
-            asset_path: "Release/FIVE_IN_A_ROW.exe"
+            asset_path: "FIVE_IN_A_ROW.exe"
             file_extension: ".exe"
           - os: ubuntu-latest
             os_name: linux
-            asset_path: "FIVE_IN_A_ROW"
-            file_extension: ""
+            asset_path: "FIVE_IN_A_ROW*.AppImage"
+            file_extension: ".AppImage"
           - os: macos-latest
             os_name: macos
-            asset_path: "FIVE_IN_A_ROW"
-            file_extension: ""
+            asset_path: "FIVE_IN_A_ROW.dmg"
+            file_extension: ".dmg"
 
     steps:
       - name: Checkout repository
@@ -48,11 +48,29 @@ jobs:
           name: build-artifacts-${{ matrix.os }}
           path: bin/release/${{ matrix.asset_path }}
 
+      - name: Install LinuxDeploy
+        if: matrix.os_name == 'linux' && startsWith(github.ref, 'refs/tags/')
+        uses: miurahr/install-linuxdeploy-action@v1
+        with:
+          plugins: qt appimage
+
+      - name: Package (Linux)
+        if: matrix.os_name == 'linux' && startsWith(github.ref, 'refs/tags/')
+        run: linuxdeploy-x86_64.AppImage --plugin=qt --output=appimage --executable=bin/release/FIVE_IN_A_ROW --appdir AppDir
+
+      - name: Package (macOS)
+        if: matrix.os_name == 'macos' && startsWith(github.ref, 'refs/tags/')
+        run: sudo macdeployqt FIVE_IN_A_ROW.app -verbose=1 -dmg
+
+      - name: Package (Windows)
+        if: matrix.os_name == 'windows' && startsWith(github.event.ref, 'refs/tags/')
+        run: windeployqt.exe FIVE_IN_A_ROW.exe
+
       - name: Create release
         uses: svenstaro/upload-release-action@v2
         if: startsWith(github.ref, 'refs/tags/')
         with:
           asset_name: FIVE_IN_A_ROW-${{ matrix.os_name }}-$tag${{ matrix.file_extension }}
-          file: bin/release/${{ matrix.asset_path }}
+          file: ${{ matrix.asset_path }}
           repo_token: ${{ secrets.GITHUB_TOKEN }}
           tag: ${{ github.ref }}
