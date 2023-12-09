@@ -62,11 +62,11 @@ jobs:
         run: |
           echo "[Desktop Entry]" > FIVE_IN_A_ROW.desktop
           echo "Categories=Game;" >> FIVE_IN_A_ROW.desktop
-          echo "Icon=icon" >> FIVE_IN_A_ROW.desktop
+          echo "Icon=app_icon" >> FIVE_IN_A_ROW.desktop
           echo "Name=Five in a row" >> FIVE_IN_A_ROW.desktop
           echo "Type=Application" >> FIVE_IN_A_ROW.desktop
           echo "Exec=FIVE_IN_A_ROW" >> FIVE_IN_A_ROW.desktop
-          linuxdeploy-x86_64.AppImage --plugin=qt --output=appimage --desktop-file=FIVE_IN_A_ROW.desktop --icon-file=icon.ico --executable=bin/release/FIVE_IN_A_ROW --appdir build
+          linuxdeploy-x86_64.AppImage --plugin=qt --output=appimage --desktop-file=FIVE_IN_A_ROW.desktop --icon-file=app_icon.ico --executable=bin/release/FIVE_IN_A_ROW --appdir AppDir
 
       - name: Package (macOS)
         if: matrix.os_name == 'macos'
