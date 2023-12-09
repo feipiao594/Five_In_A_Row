@@ -9,6 +9,7 @@ permissions:
 
 jobs:
   build-and-release:
+    name: "Build and release (${{ matrix.os_name }})"
     runs-on: ${{ matrix.os }}
 
     strategy:
@@ -43,8 +44,14 @@ jobs:
       - name: Build
         run: cmake --build build --config Release
 
+      - name: Install FUSE
+        if: matrix.os_name == 'linux'
+        run: |
+          sudo add-apt-repository universe
+          sudo apt install libfuse2
+
       - name: Install LinuxDeploy
-        if: matrix.os_name == 'linux' && startsWith(github.ref, 'refs/tags/')
+        if: matrix.os_name == 'linux'
         uses: miurahr/install-linuxdeploy-action@v1
         with:
           plugins: qt appimage
