@@ -43,7 +43,7 @@ jobs:
         run: cmake -Bbuild -DCMAKE_BUILD_TYPE=Release
 
       - name: Build
-        run: cmake --build build --config Release
+        run: cmake --build build --target all --config Release
 
       - name: Install Linux Deps
         if: matrix.os_name == 'linux'
