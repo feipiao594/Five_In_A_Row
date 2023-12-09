@@ -58,11 +58,11 @@ jobs:
 
       - name: Package (Linux)
         if: matrix.os_name == 'linux'
-        run: linuxdeploy-x86_64.AppImage --plugin=qt --output=appimage --executable=bin/release/FIVE_IN_A_ROW --appdir AppDir
+        run: linuxdeployqt -appimage bin/release/FIVE_IN_A_ROW
 
       - name: Package (macOS)
         if: matrix.os_name == 'macos'
-        run: sudo macdeployqt FIVE_IN_A_ROW.app -verbose=1 -dmg
+        run: macdeployqt -dmg FIVE_IN_A_ROW.app
 
       - name: Package (Windows)
         if: matrix.os_name == 'windows'
