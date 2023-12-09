@@ -22,7 +22,7 @@ jobs:
             file_extension: ".exe"
           - os: ubuntu-latest
             os_name: linux
-            asset_path: "FIVE_IN_A_ROW*.AppImage"
+            asset_path: "Five_in_a_row-x86_64.AppImage"
             file_extension: ".AppImage"
           - os: macos-latest
             os_name: macos
