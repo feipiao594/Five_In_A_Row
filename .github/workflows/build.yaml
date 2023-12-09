@@ -49,7 +49,7 @@ jobs:
         if: matrix.os_name == 'linux'
         run: |
           sudo add-apt-repository universe
-          sudo apt install libfuse2 libxcb-cursor0
+          sudo apt install appstream libfuse2 libxcb-cursor0
 
       - name: Install LinuxDeploy
         if: matrix.os_name == 'linux'
