@@ -62,7 +62,6 @@ jobs:
         run: |
           echo "[Desktop Entry]" > FIVE_IN_A_ROW.desktop
           echo "Categories=Game;" >> FIVE_IN_A_ROW.desktop
-          echo "Icon=icon.ico" >> FIVE_IN_A_ROW.desktop
           echo "Name=Five in a row" >> FIVE_IN_A_ROW.desktop
           echo "Type=Application" >> FIVE_IN_A_ROW.desktop
           echo "Exec=FIVE_IN_A_ROW" >> FIVE_IN_A_ROW.desktop
