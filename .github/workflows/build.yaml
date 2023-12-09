@@ -26,7 +26,7 @@ jobs:
             file_extension: ".AppImage"
           - os: macos-latest
             os_name: macos
-            asset_path: "FIVE_IN_A_ROW.dmg"
+            asset_path: "bin/release/FIVE_IN_A_ROW.dmg"
             file_extension: ".dmg"
 
     steps:
