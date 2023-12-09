@@ -37,6 +37,7 @@ jobs:
         uses: jurplel/install-qt-action@v3
         with:
           version: "6"
+          cache: true
 
       - name: Configure CMake
         run: cmake -Bbuild -DCMAKE_BUILD_TYPE=Release
@@ -58,7 +59,7 @@ jobs:
 
       - name: Package (Linux)
         if: matrix.os_name == 'linux'
-        run: linuxdeployqt -appimage bin/release/FIVE_IN_A_ROW
+        run: linuxdeploy-x86_64.AppImage --plugin=qt --output=appimage --executable=bin/release/FIVE_IN_A_ROW --appdir build
 
       - name: Package (macOS)
         if: matrix.os_name == 'macos'
