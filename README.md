@@ -20,3 +20,6 @@ NJUPT程序设计周，五子棋项目
 
 ### 关于未来
 可能会在未来将该项目重构，修正混乱的commit
+
+### 错误排除
+1. Windows平台需要Mircosoft Visual C++运行时库，使用方法为，下载后解压缩，启动其中的`Five_In_A_Row.exe`
