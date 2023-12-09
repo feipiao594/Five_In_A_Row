@@ -1,12 +1,15 @@
-name: Build
+name: Build and release
 
 on:
   - push
   - pull_request
 
-jobs:
-  build:
+permissions: 
+  contents: write
 
+jobs:
+  build-and-release:
+    name: "Build and release (${{ matrix.os_name }})"
     runs-on: ${{ matrix.os }}
 
     strategy:
@@ -14,8 +17,17 @@ jobs:
         os: [windows-latest, ubuntu-latest, macos-latest]
         include:
           - os: windows-latest
+            os_name: windows
+            asset_path: "FIVE_IN_A_ROW.zip"
+            file_extension: ".zip"
           - os: ubuntu-latest
+            os_name: linux
+            asset_path: "Five_in_a_row-x86_64.AppImage"
+            file_extension: ".AppImage"
           - os: macos-latest
+            os_name: macos
+            asset_path: "bin/release/FIVE_IN_A_ROW.dmg"
+            file_extension: ".dmg"
 
     steps:
       - name: Checkout repository
@@ -24,7 +36,8 @@ jobs:
       - name: Install Qt
         uses: jurplel/install-qt-action@v3
         with:
-          version: "6.5.3"
+          version: "6"
+          cache: true
 
       - name: Configure CMake
         run: cmake -Bbuild -DCMAKE_BUILD_TYPE=Release
@@ -32,14 +45,51 @@ jobs:
       - name: Build
         run: cmake --build build --config Release
 
-      - name: Archive artifacts
+      - name: Install Linux Deps
+        if: matrix.os_name == 'linux'
+        run: |
+          sudo add-apt-repository universe
+          sudo apt install appstream libfuse2 libxcb-cursor0
+
+      - name: Install LinuxDeploy
+        if: matrix.os_name == 'linux'
+        uses: miurahr/install-linuxdeploy-action@v1
+        with:
+          plugins: qt appimage
+
+      - name: Package (Linux)
+        if: matrix.os_name == 'linux'
+        run: |
+          echo "[Desktop Entry]" > FIVE_IN_A_ROW.desktop
+          echo "Categories=Game;" >> FIVE_IN_A_ROW.desktop
+          echo "Icon=app_icon" >> FIVE_IN_A_ROW.desktop
+          echo "Name=Five in a row" >> FIVE_IN_A_ROW.desktop
+          echo "Type=Application" >> FIVE_IN_A_ROW.desktop
+          echo "Exec=FIVE_IN_A_ROW" >> FIVE_IN_A_ROW.desktop
+          linuxdeploy-x86_64.AppImage --plugin=qt --output=appimage --desktop-file=FIVE_IN_A_ROW.desktop --icon-file=app_icon.svg --executable=bin/release/FIVE_IN_A_ROW --appdir AppDir
+
+      - name: Package (macOS)
+        if: matrix.os_name == 'macos'
+        run: macdeployqt bin/release/FIVE_IN_A_ROW.app -dmg
+
+      - name: Package (Windows)
+        if: matrix.os_name == 'windows'
+        working-directory: bin/release/Release
+        run: |
+          windeployqt --release FIVE_IN_A_ROW.exe
+          7z a -tzip ../../../FIVE_IN_A_ROW.zip *
+
+      - name: Upload artifacts
         uses: actions/upload-artifact@v3
         with:
-          name: build-artifacts-${{ matrix.os }}
-          path: bin/release
+          name: build-artifacts-${{ matrix.os_name }}
+          path: ${{ matrix.asset_path }}
 
       - name: Create release
-        uses: softprops/action-gh-release@v1
+        uses: svenstaro/upload-release-action@v2
         if: startsWith(github.ref, 'refs/tags/')
         with:
-          files: bin/release/*
+          asset_name: FIVE_IN_A_ROW-${{ matrix.os_name }}-$tag${{ matrix.file_extension }}
+          file: ${{ matrix.asset_path }}
+          repo_token: ${{ secrets.GITHUB_TOKEN }}
+          tag: ${{ github.ref }}
