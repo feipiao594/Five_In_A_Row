@@ -37,7 +37,6 @@ jobs:
         uses: jurplel/install-qt-action@v3
         with:
           version: "6"
-          modules: "xcb"
 
       - name: Configure CMake
         run: cmake -Bbuild -DCMAKE_BUILD_TYPE=Release
@@ -45,11 +44,11 @@ jobs:
       - name: Build
         run: cmake --build build --config Release
 
-      - name: Install FUSE
+      - name: Install Linux Deps
         if: matrix.os_name == 'linux'
         run: |
           sudo add-apt-repository universe
-          sudo apt install libfuse2
+          sudo apt install libfuse2 libxcb-cursor0
 
       - name: Install LinuxDeploy
         if: matrix.os_name == 'linux'
