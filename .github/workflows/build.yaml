@@ -18,8 +18,8 @@ jobs:
         include:
           - os: windows-latest
             os_name: windows
-            asset_path: "FIVE_IN_A_ROW.exe"
-            file_extension: ".exe"
+            asset_path: "FIVE_IN_A_ROW.zip"
+            file_extension: ".zip"
           - os: ubuntu-latest
             os_name: linux
             asset_path: "Five_in_a_row-x86_64.AppImage"
@@ -70,11 +70,13 @@ jobs:
 
       - name: Package (macOS)
         if: matrix.os_name == 'macos'
-        run: macdeployqt -dmg FIVE_IN_A_ROW.app
+        run: macdeployqt bin/release/FIVE_IN_A_ROW.app -dmg
 
       - name: Package (Windows)
         if: matrix.os_name == 'windows'
-        run: windeployqt.exe bin/release/Release/FIVE_IN_A_ROW.exe
+        run: |
+          windeployqt --release bin/release/Release/FIVE_IN_A_ROW.exe
+          zip -r FIVE_IN_A_ROW.zip bin/release/Release/*
 
       - name: Upload artifacts
         uses: actions/upload-artifact@v3
