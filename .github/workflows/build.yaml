@@ -43,12 +43,6 @@ jobs:
       - name: Build
         run: cmake --build build --config Release
 
-      - name: Upload artifacts
-        uses: actions/upload-artifact@v3
-        with:
-          name: build-artifacts-${{ matrix.os }}
-          path: bin/release/${{ matrix.asset_path }}
-
       - name: Install LinuxDeploy
         if: matrix.os_name == 'linux' && startsWith(github.ref, 'refs/tags/')
         uses: miurahr/install-linuxdeploy-action@v1
@@ -56,16 +50,22 @@ jobs:
           plugins: qt appimage
 
       - name: Package (Linux)
-        if: matrix.os_name == 'linux' && startsWith(github.ref, 'refs/tags/')
+        if: matrix.os_name == 'linux'
         run: linuxdeploy-x86_64.AppImage --plugin=qt --output=appimage --executable=bin/release/FIVE_IN_A_ROW --appdir AppDir
 
       - name: Package (macOS)
-        if: matrix.os_name == 'macos' && startsWith(github.ref, 'refs/tags/')
+        if: matrix.os_name == 'macos'
         run: sudo macdeployqt FIVE_IN_A_ROW.app -verbose=1 -dmg
 
       - name: Package (Windows)
-        if: matrix.os_name == 'windows' && startsWith(github.event.ref, 'refs/tags/')
+        if: matrix.os_name == 'windows'
         run: windeployqt.exe FIVE_IN_A_ROW.exe
+
+      - name: Upload artifacts
+        uses: actions/upload-artifact@v3
+        with:
+          name: build-artifacts-${{ matrix.os_name }}
+          path: ${{ matrix.asset_path }}
 
       - name: Create release
         uses: svenstaro/upload-release-action@v2
