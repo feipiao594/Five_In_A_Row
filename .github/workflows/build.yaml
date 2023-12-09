@@ -74,9 +74,10 @@ jobs:
 
       - name: Package (Windows)
         if: matrix.os_name == 'windows'
+        working-directory: bin/release/Release
         run: |
-          windeployqt --release bin/release/Release/FIVE_IN_A_ROW.exe
-          7z a -tzip FIVE_IN_A_ROW.zip bin/release/Release/*
+          windeployqt --release FIVE_IN_A_ROW.exe
+          7z a -tzip ../../../FIVE_IN_A_ROW.zip *
 
       - name: Upload artifacts
         uses: actions/upload-artifact@v3
