@@ -1,3 +1,4 @@
+#include <QStack>
 #include <random>
 
 #include "computer.h"
@@ -137,36 +138,95 @@ int Computer::negGroupScore(Coordinate coord, Unit unit) {
   return score;
 }
 
-Coordinate Computer::getBestCoord(Unit unit) {
-  int max = 0;
-  QVector<std::pair<Coordinate, int>> candidateList;
+int Computer::getRandomInt(int range) {
+  std::random_device seed;
+  std::ranlux48 engine(seed());
+  std::uniform_int_distribution<> distrib(0, range);
+  return distrib(engine);
+}
 
+int Computer::selectCandidates(QVector<std::pair<Coordinate, int>>& list, Unit unit) {
+  int maxScore = 0;
   for (int r = 0; r < BOARD_SIZE; r++) {
     for (int c = 0; c < BOARD_SIZE; c++) {
       if (board->units[r][c] != Unit::Empty)
-        continue;
-
+          continue;
       Coordinate coord = Coordinate(r, c);
-
       int score = horGroupScore(coord, unit) + verGroupScore(coord, unit) +
                   posGroupScore(coord, unit) + negGroupScore(coord, unit);
-
-      if (score >= max) {
-        max = score;
-        candidateList.push_back(std::make_pair(coord, score));
+      if (score >= maxScore) {
+          maxScore = score;
+          list.push_back(std::make_pair(coord, score));
       }
     }
   }
+  return maxScore;
+}
 
-  for (int i = 0; i < candidateList.size(); i++) {
-    if (candidateList.at(i).second < max)
-      candidateList.remove(i--);
+Coordinate Computer::getBestCoord(Unit unit) {
+  QVector<std::pair<Coordinate, int>> candidateList;
+  int maxScore = selectCandidates(candidateList, unit);
+  for (int i = (int)candidateList.size() - 1; i >= 0; i--) {
+    if (candidateList.at(i).second < maxScore)
+      candidateList.remove(i);
+  }
+  return candidateList.at(getRandomInt((int)candidateList.size() - 1)).first;
+}
+
+Coordinate Computer::getGameCoord(Unit unit) {
+  QVector<std::pair<Coordinate, int>> candidateList;
+  int maxScore = selectCandidates(candidateList, unit);
+
+  for (int i = (int)candidateList.size() - 1; i >= 0; i--) {
+    if (candidateList.at(i).second < maxScore)
+      candidateList.remove(i);
   }
 
-  std::random_device seed;
-  std::ranlux48 engine(seed());
-  std::uniform_int_distribution<> distrib(0, candidateList.size() - 1);
-  int random = distrib(engine);
+  int maxWeight = INT32_MIN;
+  QStack<Coordinate> record;
+  for (int i = (int)candidateList.size() - 1; i >= 0; i--) {
 
-  return candidateList.at(random).first;
+    Coordinate coord = candidateList.at(i).first;
+    Unit gameUnit = unit;
+    int localScore = maxScore, rivalScore = 0;
+    int counter = 0, score = maxScore;
+
+    while (score < 800000) {
+      board->setUnit(coord, gameUnit);
+      update(coord, gameUnit);
+      record.push(coord);
+      gameUnit = (Unit)-(int)gameUnit;
+
+      QVector<std::pair<Coordinate, int>> list;
+      score = selectCandidates(list, unit);
+      (gameUnit == unit ? localScore : rivalScore) = score;
+
+      if (list.empty()) break;
+      for (int it = (int)list.size() - 1; it >= 0; it--) {
+        if (list.at(it).second < score)
+          list.remove(it);
+      }
+
+      coord = list.at(getRandomInt((int)list.size() - 1)).first;
+      counter++;
+    }
+
+    while (!record.empty()) {
+      gameUnit = (Unit)-(int)gameUnit;
+      coord = record.pop();
+      board->setUnit(coord, Unit::Empty);
+      remove(coord, gameUnit);
+    }
+
+    int weight = (localScore - rivalScore) * (BOARD_SIZE * BOARD_SIZE - counter);
+    candidateList[i].second = weight;
+    if (weight >= maxWeight) maxWeight = weight;
+    else candidateList.remove(i);
+  }
+
+  for (int i = (int)candidateList.size() - 1; i >= 0; i--) {
+    if (candidateList.at(i).second < maxWeight)
+      candidateList.remove(i);
+  }
+  return candidateList.at(getRandomInt((int)candidateList.size() - 1)).first;
 }
