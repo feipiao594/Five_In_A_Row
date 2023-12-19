@@ -189,7 +189,7 @@ Coordinate Computer::getGameCoord(Unit unit) {
     Coordinate coord = candidateList.at(i).first;
     Unit gameUnit = unit;
     int localScore = maxScore, rivalScore = 0;
-    int counter = 0, score = maxScore;
+    int score = maxScore;
 
     while (score < 800000) {
       board->setUnit(coord, gameUnit);
@@ -208,7 +208,6 @@ Coordinate Computer::getGameCoord(Unit unit) {
       }
 
       coord = list.at(getRandomInt((int)list.size() - 1)).first;
-      counter++;
     }
 
     while (!record.empty()) {
@@ -218,7 +217,7 @@ Coordinate Computer::getGameCoord(Unit unit) {
       remove(coord, gameUnit);
     }
 
-    int weight = (localScore - rivalScore) * (BOARD_SIZE * BOARD_SIZE - counter);
+    int weight = localScore - rivalScore;
     candidateList[i].second = weight;
     if (weight >= maxWeight) maxWeight = weight;
     else candidateList.remove(i);
