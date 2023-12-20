@@ -6,7 +6,7 @@ Player Manager::curPlayer() {
   return ((getTotalStep() & 1) == 0) ? black : white;
 }
 
-int Manager::getTotalStep() { return record.size(); }
+int Manager::getTotalStep() { return (int)record.size(); }
 
 Unit Manager::getCurColor() { return curPlayer().unit; }
 
@@ -28,8 +28,8 @@ Manager::Manager(bool isBlackComputer, bool isWhiteComputer) {
 
 bool Manager::isWin(Coordinate baseCoord) {
   Unit unit = board.getUnit(baseCoord);
-  for (int i = 0; i < 4; i++) {
-    Coordinate dirCoord = dirVector[i];
+  for (int d = 0; d < 4; d++) {
+    Coordinate dirCoord = dirVector[d];
     int counter = 1;
     Coordinate coord = baseCoord;
     for (int i = 0; i < 4; i++) {
@@ -131,5 +131,6 @@ void Manager::setComputer(bool isBlackComputer, bool isWhiteComputer) {
 }
 
 Coordinate Manager::compute() {
-  return computer.getBestCoord(curPlayer().unit);
+//  return computer.getBestCoord(curPlayer().unit);
+  return computer.getGameCoord(curPlayer().unit);
 }

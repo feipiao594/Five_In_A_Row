@@ -13,6 +13,7 @@ public:
   void update(Coordinate, Unit);
   void remove(Coordinate, Unit);
   Coordinate getBestCoord(Unit);
+  Coordinate getGameCoord(Unit);
 
 private:
   Board *board;
@@ -28,12 +29,15 @@ private:
   void fitPosGroup(Coordinate, int, int);
   void fitNegGroup(Coordinate, int, int);
 
-  int count2Score(int, int, Unit);
+  static int count2Score(int, int, Unit);
+  static int getRandomInt(int);
 
   int horGroupScore(Coordinate, Unit);
   int verGroupScore(Coordinate, Unit);
   int posGroupScore(Coordinate, Unit);
   int negGroupScore(Coordinate, Unit);
+
+  int selectCandidates(QVector<std::pair<Coordinate, int>>&, Unit);
 };
 
 #endif // COMPUTER_H

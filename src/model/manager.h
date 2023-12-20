@@ -54,7 +54,7 @@ private:
   Unit winner;
   QVector<Coordinate> undoList;
 
-  bool isCoordValid(Coordinate);
+  static bool isCoordValid(Coordinate);
   bool isWin(Coordinate);
 
   Coordinate undo();
