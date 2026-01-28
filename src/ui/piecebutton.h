@@ -8,33 +8,34 @@
 #include "../model/resource.h"
 
 class PieceButton : public QPushButton {
-  Q_OBJECT
+    Q_OBJECT
 
-  Unit color;
-  bool canhover = true;
-  int n;
-  int x;
-  int y;
+    Unit color;
+    bool canhover = true;
+    int n;
+    int x;
+    int y;
 
 public:
-  PieceButton(const int _x, const int _y, const int n,
-              QWidget *parent = nullptr);
-  void updateColor();
-  void setColor(Unit color);
-  void clearColor();
-  void stopUsing() { canhover = false; }
+    PieceButton(const int _x, const int _y, const int n, QWidget* parent = nullptr);
+    void updateColor();
+    void setColor(Unit color);
+    void clearColor();
+    void stopUsing() {
+        canhover = false;
+    }
 
 protected:
-  bool event(QEvent *event) override;
+    bool event(QEvent* event) override;
 
 signals:
-  void clickPos(int x, int y);
+    void clickPos(int x, int y);
 
 public slots:
-  void buttonPushed();
+    void buttonPushed();
 
 private:
-  void setImage(const QPixmap &map);
+    void setImage(const QPixmap& map);
 };
 
 #endif // PIECEBUTTON_H

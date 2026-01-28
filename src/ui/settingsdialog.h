@@ -8,21 +8,20 @@
 #include <QSpinBox>
 
 class SettingsDialog : public QDialog {
-  Q_OBJECT
+    Q_OBJECT
 
 public:
-  explicit SettingsDialog(QWidget *parent = nullptr);
+    explicit SettingsDialog(QWidget* parent = nullptr);
 
 private:
-  QVBoxLayout *mainLayout;
-  QLabel *title;
+    QVBoxLayout* mainLayout;
+    QLabel* title;
 
-  QLabel *aiDelayLabel;
-  QSpinBox *aiDelaySpin;
+    QLabel* aiDelayLabel;
+    QSpinBox* aiDelaySpin;
 
-  QHBoxLayout *buttonRow;
-  QPushButton *closeButton;
+    QHBoxLayout* buttonRow;
+    QPushButton* closeButton;
 };
 
 #endif // SETTINGSDIALOG_H
-

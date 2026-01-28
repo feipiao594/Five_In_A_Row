@@ -11,47 +11,48 @@
 #include <QRadioButton>
 
 class MenuUI : public QDialog {
-  Q_OBJECT
+    Q_OBJECT
 
 private:
-  QVBoxLayout *mainLayout;
-  QLabel *title;
+    QVBoxLayout* mainLayout;
+    QLabel* title;
 
-  QGroupBox *modeGroup;
-  QRadioButton *localModeRadio;
-  QRadioButton *onlineModeRadio;
+    QGroupBox* modeGroup;
+    QRadioButton* localModeRadio;
+    QRadioButton* onlineModeRadio;
 
-  QGroupBox *roomGroup;
-  QComboBox *blackType;
-  QComboBox *whiteType;
+    QGroupBox* roomGroup;
+    QComboBox* blackType;
+    QComboBox* whiteType;
 
-  QPushButton *startButton;
-  QPushButton *settingsButton;
-  QPushButton *exitButton;
+    QPushButton* startButton;
+    QPushButton* settingsButton;
+    QPushButton* exitButton;
 
 public slots:
-  void startGame();
-  void showMenu();
-  void endProgram() { close(); }
-  void onModeChanged();
-  void onStartClicked();
-  void onSettingsClicked();
+    void startGame();
+    void showMenu();
+    void endProgram() {
+        close();
+    }
+    void onModeChanged();
+    void onStartClicked();
+    void onSettingsClicked();
 
 signals:
-  void startLocal(bool blackIsComputer, bool whiteIsComputer);
-  void startOnline();
+    void startLocal(bool blackIsComputer, bool whiteIsComputer);
+    void startOnline();
 
 private:
-  MenuUI();
+    MenuUI();
 
 public:
-  static MenuUI *getInstance() {
-    static MenuUI *singleton = nullptr;
-    if (!singleton)
-      singleton = new MenuUI;
-    return singleton;
-  }
+    static MenuUI* getInstance() {
+        static MenuUI* singleton = nullptr;
+        if (!singleton)
+            singleton = new MenuUI;
+        return singleton;
+    }
 };
 
 #endif // MENUUI_H
-

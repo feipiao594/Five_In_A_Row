@@ -11,44 +11,45 @@
 // Match：对局核心（棋盘状态 + 规则）。
 // 只做：落子/胜负/悔棋/重开；不关心玩家输入来源、不做回合调度。
 class Match : public QObject {
-  Q_OBJECT
+    Q_OBJECT
 
 public:
-  explicit Match(QObject *parent = nullptr);
+    explicit Match(QObject* parent = nullptr);
 
-  Unit curColor() const;
-  Unit winner() const;
-  Coordinate latestCoord() const;
-  QVector<Coordinate> undoList() const;
-  bool isOver() const;
+    Unit curColor() const;
+    Unit winner() const;
+    Coordinate latestCoord() const;
+    QVector<Coordinate> undoList() const;
+    bool isOver() const;
 
-  const Board &boardView() const { return board; }
+    const Board& boardView() const {
+        return board;
+    }
 
 signals:
-  void onOverlap();
-  void onDropped();
-  void onGameOver();
-  void onUndoDone();
+    void onOverlap();
+    void onDropped();
+    void onGameOver();
+    void onUndoDone();
 
 public slots:
-  void drop(Coordinate coord);
-  void blackUndo();
-  void whiteUndo();
-  void restart();
+    void drop(Coordinate coord);
+    void blackUndo();
+    void whiteUndo();
+    void restart();
 
 private:
-  int totalStep() const;
-  static bool isCoordValid(Coordinate coord);
-  bool isWin(Coordinate baseCoord) const;
-  Coordinate undo();
+    int totalStep() const;
+    static bool isCoordValid(Coordinate coord);
+    bool isWin(Coordinate baseCoord) const;
+    Coordinate undo();
 
-  Board board;
-  QStack<Coordinate> record;
+    Board board;
+    QStack<Coordinate> record;
 
-  Unit winner_ = Unit::Empty;
-  bool over_ = false;
-  QVector<Coordinate> undoList_;
+    Unit winner_ = Unit::Empty;
+    bool over_ = false;
+    QVector<Coordinate> undoList_;
 };
 
 #endif // MATCH_H
-

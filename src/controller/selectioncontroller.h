@@ -4,25 +4,25 @@
 #include <QObject>
 
 class SelectionController : public QObject {
-  Q_OBJECT
+    Q_OBJECT
 
 private:
-  SelectionController(){};
+    SelectionController() {};
 
 public slots:
-  void startLocal(bool blackIsComputer, bool whiteIsComputer);
-  void startOnline();
+    void startLocal(bool blackIsComputer, bool whiteIsComputer);
+    void startOnline();
 
 signals:
-  void updateComputerSides(bool blackIsComputer, bool whiteIsComputer);
+    void updateComputerSides(bool blackIsComputer, bool whiteIsComputer);
 
 public:
-  static SelectionController *getInstance() {
-    static SelectionController *singleton = nullptr;
-    if (!singleton)
-      singleton = new SelectionController;
-    return singleton;
-  }
+    static SelectionController* getInstance() {
+        static SelectionController* singleton = nullptr;
+        if (!singleton)
+            singleton = new SelectionController;
+        return singleton;
+    }
 };
 
 #endif // SELECTIONCONTROLLER_H
