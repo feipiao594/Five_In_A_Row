@@ -10,7 +10,7 @@ public:
 
   Board();
 
-  Unit getUnit(Coordinate);
+  Unit getUnit(Coordinate) const;
   void setUnit(Coordinate, Unit);
 
   void clear();

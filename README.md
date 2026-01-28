@@ -1,30 +1,30 @@
 # Five_In_A_Row
-NJUPT程序设计周，五子棋项目
+NJUPT 程序设计周 · 五子棋（Gomoku）项目（Qt6 + CMake）。
 
-该项目利用QT开发，支持跨平台
-| **Windows** | **macOS** | **Linux** |
-| :---------: | :-------: | :-------: |
-|      ✅      |     ✅     |     ✅     |
+| Windows | macOS | Linux |
+| :-----: | :---: | :---: |
+|   ✅    |  ✅   |  ✅   |
 
----
-
-## 关于我的程序设计周
-版本号**v0.0.1-beta**为程序设计周时期完成的版本，该阶段共有三人完成，共耗时4天。我们仍在学习中，还有许多不足。
-
-### 支持的功能
-
+## 功能
 - 双人对战
-- 人机对战
+- 人机对战（启发式评估 + 简单推演）
+- 悔棋、重新开始
 
-其中，人机对战有一定的难度
+## 构建与运行
+依赖：Qt6（Core、Widgets）+ CMake（>= 3.14）+ C++17。
 
-### 关于该项目的后端
-[Five_In_A_Row_Backend](https://github.com/feipiao594/Five_In_A_Row_Backend)
-正在开发中，暂时不支持
+```bash
+cmake -B build -DCMAKE_BUILD_TYPE=Release
+cmake --build build --config Release
+```
 
+运行产物默认输出到：`bin/release/`（Release）或 `bin/debug/`（Debug）。
 
-### 关于未来
-可能会在未来将该项目重构，修正混乱的commit
+## 文档（翻新/重构用）
+- [docs/项目文档.md](docs/项目文档.md)
+- [docs/翻新计划.md](docs/翻新计划.md)
+- [docs/开发指南.md](docs/开发指南.md)
 
-### 错误排除
-1. Windows平台需要Mircosoft Visual C++运行时库，使用方法为，下载后解压缩，启动其中的`Five_In_A_Row.exe`
+## 备注
+- v0.0.1-beta 为程序设计周阶段版本（3 人、4 天）。
+- Windows 可能需要 Microsoft Visual C++ 运行时库（缺失时会无法启动）。

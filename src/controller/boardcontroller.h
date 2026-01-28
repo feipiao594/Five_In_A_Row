@@ -19,6 +19,7 @@ signals:
   void updateDropPiece();
   void updateWinner(Unit);
   void updateUndo(int x, int y);
+  void boardClicked(int x, int y);
 public slots:
   void onGameOverController() {
     emit updateWinner(Manager::getInstance()->getWinner());
@@ -28,13 +29,13 @@ public slots:
     current_drop_y = Manager::getInstance()->getLatestCoord().row;
     current_drop_color = Manager::getInstance()->getCurColor();
     whoTurn = current_drop_color == Unit::Black ? Unit::White : Unit::Black;
-    isPersonTurn = Manager::getInstance()->getIsPerson();
+    isPersonTurn = Manager::getInstance()->isLocalTurn();
     setDropPieceSuccessful();
   }
 
   void onUndoDoneController() {
     whoTurn = Manager::getInstance()->getCurColor();
-    isPersonTurn = Manager::getInstance()->getIsPerson();
+    isPersonTurn = Manager::getInstance()->isLocalTurn();
     auto list = Manager::getInstance()->getUndoList();
     for (auto pos : list)
       emit updateUndo(pos.col, pos.row);
@@ -42,9 +43,9 @@ public slots:
 
 public:
   void updateIsYourTurn() {
-    isPersonTurn = Manager::getInstance()->getIsPerson();
+    isPersonTurn = Manager::getInstance()->isLocalTurn();
   }
-  bool getIsYourTurn() { return isPersonTurn; }
+  bool getIsYourTurn() { return Manager::getInstance()->isLocalTurn(); }
   void setDropPieceSuccessful();
   void pieceClicked(int x, int y);
   BoardController() : current_drop_x(-1), current_drop_y(-1) {

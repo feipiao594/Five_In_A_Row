@@ -1,34 +1,35 @@
 #ifndef MANAGER_H
 #define MANAGER_H
 
-#include <QStack>
-
-#include "board.h"
-#include "computer.h"
 #include "coordinate.h"
+#include "match.h"
 #include "player.h"
 
 class Manager : public QObject {
   Q_OBJECT
 
+  friend class Player;
+
 public:
-  Manager(bool, bool);
+  Manager();
 
-    Player curPlayer();
+    Unit getCurColor() const;
+    Unit getWinner() const;
+    Coordinate getLatestCoord() const;
+    QVector<Coordinate> getUndoList() const;
 
-    int getTotalStep();
-    Unit getCurColor();
-    Unit getWinner();
-    Coordinate getLatestCoord();
-    QVector<Coordinate> getUndoList();
-    bool getIsPerson();
+    int getAiDelayMs() const { return aiDelayMs; }
 
   static Manager *getInstance() {
     static Manager *singleton = nullptr;
     if (!singleton)
-      singleton = new Manager(false, false);
+      singleton = new Manager();
     return singleton;
   }
+
+  // 由外部提供两侧玩家（可以是本地/AI/网络等任意实现），Manager 只负责回合调度与胜负收敛。
+  void setPlayers(Player *black, Player *white);
+  bool isLocalTurn() const;
 
 signals:
 
@@ -43,23 +44,29 @@ public slots:
     void blackUndo();
     void whiteUndo();
     void restart();
-    void setComputer(bool isBlackComputer, bool isWhiteComputer);
+
+    void setAiDelayMs(int delayMs);
 
 private:
-  Board board;
-  Player black, white;
-  QStack<Coordinate> record;
-  Computer computer;
+  Match *match;
+  Player *blackPlayer = nullptr;
+  Player *whitePlayer = nullptr;
+  int aiDelayMs = 250;
 
-  Unit winner;
-  QVector<Coordinate> undoList;
+private slots:
+  void onPlayerMove(Coordinate coord);
+  void onMatchDropped();
+  void onMatchEnded();
+  void onMatchUndoDone();
+  void onMatchOverlap();
 
-  static bool isCoordValid(Coordinate);
-  bool isWin(Coordinate);
-
-  Coordinate undo();
-
-    Coordinate compute();
+private:
+  const Board &boardView() const { return match->boardView(); }
+  void syncPlayersToMatch();
+  void notifyMoveApplied(Coordinate coord, Unit unit);
+  void notifyMoveReverted(Coordinate coord);
+  Player *currentPlayer() const;
+  void requestTurn();
 
 };
 

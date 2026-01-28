@@ -1,9 +1,8 @@
 #include "boardcontroller.h"
-#include "../ui/mainui.h"
 #include <QDebug>
 
 void BoardController::pieceClicked(int x, int y) {
-  Manager::getInstance()->drop(Coordinate(y, x));
+  emit boardClicked(x, y);
 }
 
 void BoardController::setDropPieceSuccessful() {

@@ -2,7 +2,7 @@
 
 Board::Board() { clear(); }
 
-Unit Board::getUnit(Coordinate coord) { return units[coord.row][coord.col]; }
+Unit Board::getUnit(Coordinate coord) const { return units[coord.row][coord.col]; }
 
 void Board::setUnit(Coordinate coord, Unit unit) {
   units[coord.row][coord.col] = unit;

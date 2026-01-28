@@ -1,7 +1,6 @@
 #ifndef SELECTIONCONTROLLER_H
 #define SELECTIONCONTROLLER_H
 
-#include "../model/resource.h"
 #include <QObject>
 
 class SelectionController : public QObject {
@@ -11,11 +10,11 @@ private:
   SelectionController(){};
 
 public slots:
-  void selectAImode(Unit color);
-  void selectPersonmode();
+  void startLocal(bool blackIsComputer, bool whiteIsComputer);
+  void startOnline();
 
 signals:
-  void updateAiMode(Unit color);
+  void updateComputerSides(bool blackIsComputer, bool whiteIsComputer);
 
 public:
   static SelectionController *getInstance() {

@@ -1,136 +1,174 @@
 #include "manager.h"
 
-Coordinate dirVector[4] = {{0, 1}, {1, 0}, {-1, 1}, {1, 1}};
+#include <QDir>
+#include <QSettings>
+#include <QStandardPaths>
 
-Player Manager::curPlayer() {
-  return ((getTotalStep() & 1) == 0) ? black : white;
+static QSettings makeSettings() {
+  const auto baseDir =
+      QStandardPaths::writableLocation(QStandardPaths::AppConfigLocation);
+  QDir().mkpath(baseDir);
+  return QSettings(baseDir + "/settings.ini", QSettings::IniFormat);
 }
 
-int Manager::getTotalStep() { return (int)record.size(); }
+Unit Manager::getCurColor() const { return match->curColor(); }
 
-Unit Manager::getCurColor() { return curPlayer().unit; }
+Unit Manager::getWinner() const { return match->winner(); }
 
-Unit Manager::getWinner() { return winner; }
+Coordinate Manager::getLatestCoord() const { return match->latestCoord(); }
 
-Coordinate Manager::getLatestCoord() { return record.top(); }
+QVector<Coordinate> Manager::getUndoList() const { return match->undoList(); }
 
-QVector<Coordinate> Manager::getUndoList() { return undoList; }
-
-bool Manager::getIsPerson() { return !curPlayer().isComputer; }
-
-Manager::Manager(bool isBlackComputer, bool isWhiteComputer) {
-  board = Board();
-  black = Player(Unit::Black, isBlackComputer);
-  white = Player(Unit::White, isWhiteComputer);
-  record = QStack<Coordinate>();
-  computer = Computer(board);
+void Manager::setAiDelayMs(int delayMs) {
+  aiDelayMs = std::max(0, delayMs);
+  auto settings = makeSettings();
+  settings.setValue("ai/aiDelayMs", aiDelayMs);
 }
 
-bool Manager::isWin(Coordinate baseCoord) {
-  Unit unit = board.getUnit(baseCoord);
-  for (int d = 0; d < 4; d++) {
-    Coordinate dirCoord = dirVector[d];
-    int counter = 1;
-    Coordinate coord = baseCoord;
-    for (int i = 0; i < 4; i++) {
-      coord += dirCoord;
-      if (!isCoordValid(coord) || board.getUnit(coord) != unit)
-        break;
-      counter++;
-    }
-    coord = baseCoord;
-    for (int i = 0; i < 4; i++) {
-      coord -= dirCoord;
-      if (!isCoordValid(coord) || board.getUnit(coord) != unit)
-        break;
-      counter++;
-    }
-    if (counter >= 5)
-      return true;
-  }
-  return false;
-}
+Manager::Manager() {
+  match = new Match(this);
 
-bool Manager::isCoordValid(Coordinate coord) {
-  return coord.row >= 0 && coord.row < BOARD_SIZE && coord.col >= 0 &&
-         coord.col < BOARD_SIZE;
+  auto settings = makeSettings();
+  aiDelayMs = settings.value("ai/aiDelayMs", aiDelayMs).toInt();
+
+  connect(match, &Match::onDropped, this, &Manager::onMatchDropped);
+  connect(match, &Match::onGameOver, this, &Manager::onMatchEnded);
+  connect(match, &Match::onUndoDone, this, &Manager::onMatchUndoDone);
+  connect(match, &Match::onOverlap, this, &Manager::onMatchOverlap);
 }
 
 void Manager::drop(Coordinate coord) {
-  if (board.getUnit(coord) == Unit::Empty) {
-    Player player = curPlayer();
-    board.setUnit(coord, player.unit);
-    record.push(coord);
-    computer.update(coord, player.unit);
-    emit onDropped();
-    if (isWin(coord)) {
-      winner = player.unit;
-      emit onGameOver();
-    } else if (getTotalStep() >= BOARD_SIZE * BOARD_SIZE) {
-      winner = Unit::Empty;
-      emit onGameOver();
-    } else if (!getIsPerson())
-      drop(compute());
-  } else
-    emit onOverlap();
-}
-
-Coordinate Manager::undo() {
-  Coordinate coord = Coordinate(-1, -1);
-  if (!record.empty()) {
-    coord = record.pop();
-    Unit unit = board.getUnit(coord);
-    board.setUnit(coord, Unit::Empty);
-    computer.remove(coord, unit);
-  }
-  return coord;
+  match->drop(coord);
 }
 
 void Manager::blackUndo() {
-  undoList.clear();
-  if (curPlayer().unit == Unit::Black) {
-    Coordinate coord = undo();
-    if (coord.row >= 0)
-      undoList.push_back(coord);
-  }
-  Coordinate coord = undo();
-  if (coord.row >= 0)
-    undoList.push_back(coord);
-  emit onUndoDone();
-  if (!getIsPerson())
-    drop(compute());
+  if (!blackPlayer || !blackPlayer->requiresLocalInput())
+    return;
+  match->blackUndo();
 }
 
 void Manager::whiteUndo() {
-  undoList.clear();
-  if (curPlayer().unit == Unit::White) {
-    Coordinate coord = undo();
-    if (coord.row >= 0)
-      undoList.push_back(coord);
-  }
-  Coordinate coord = undo();
-  if (coord.row >= 0)
-    undoList.push_back(coord);
-  emit onUndoDone();
-  if (!getIsPerson())
-    drop(compute());
+  if (!whitePlayer || !whitePlayer->requiresLocalInput())
+    return;
+  match->whiteUndo();
 }
 
 void Manager::restart() {
-  board.clear();
-  record.clear();
-  computer.clear();
+  match->restart();
+  if (blackPlayer)
+    blackPlayer->reset();
+  if (whitePlayer)
+    whitePlayer->reset();
+  syncPlayersToMatch();
+  requestTurn();
 }
 
-void Manager::setComputer(bool isBlackComputer, bool isWhiteComputer) {
-  black.isComputer = isBlackComputer;
-  white.isComputer = isWhiteComputer;
+void Manager::setPlayers(Player *black, Player *white) {
+  if (blackPlayer)
+    blackPlayer->deleteLater();
+  if (whitePlayer)
+    whitePlayer->deleteLater();
 
-  if (curPlayer().isComputer)
-    drop(compute());
+  blackPlayer = black;
+  whitePlayer = white;
+
+  if (blackPlayer && blackPlayer->parent() != this)
+    blackPlayer->setParent(this);
+  if (whitePlayer && whitePlayer->parent() != this)
+    whitePlayer->setParent(this);
+
+  if (blackPlayer)
+    connect(blackPlayer, &Player::moveReady, this, &Manager::onPlayerMove,
+            Qt::QueuedConnection);
+  if (whitePlayer)
+    connect(whitePlayer, &Player::moveReady, this, &Manager::onPlayerMove,
+            Qt::QueuedConnection);
+
+  syncPlayersToMatch();
+  requestTurn();
 }
 
-Coordinate Manager::compute() {
-//  return computer.getBestCoord(curPlayer().unit);
-  return computer.getGameCoord(curPlayer().unit);
+bool Manager::isLocalTurn() const {
+  auto player = currentPlayer();
+  return player ? player->requiresLocalInput() : true;
+}
+
+Player *Manager::currentPlayer() const {
+  return (match->curColor() == Unit::Black) ? blackPlayer : whitePlayer;
+}
+
+void Manager::requestTurn() {
+  if (match->isOver())
+    return;
+  auto player = currentPlayer();
+  if (!player)
+    return;
+  player->requestTurn();
+}
+
+void Manager::onPlayerMove(Coordinate coord) {
+  if (match->isOver())
+    return;
+  if (coord.row < 0 || coord.col < 0)
+    return;
+
+  auto player = qobject_cast<Player *>(sender());
+  if (!player)
+    return;
+  if (player != currentPlayer())
+    return;
+  if (player->unit() != match->curColor())
+    return;
+
+  match->drop(coord);
+}
+
+void Manager::onMatchDropped() {
+  Coordinate coord = match->latestCoord();
+  Unit unit = match->boardView().getUnit(coord);
+  notifyMoveApplied(coord, unit);
+  emit onDropped();
+  requestTurn();
+}
+
+void Manager::onMatchEnded() { emit onGameOver(); }
+
+void Manager::onMatchUndoDone() {
+  for (auto coord : match->undoList())
+    notifyMoveReverted(coord);
+  emit onUndoDone();
+  requestTurn();
+}
+
+void Manager::onMatchOverlap() { emit onOverlap(); }
+
+void Manager::syncPlayersToMatch() {
+  if (blackPlayer)
+    blackPlayer->onCoreReset();
+  if (whitePlayer)
+    whitePlayer->onCoreReset();
+
+  const auto &b = match->boardView();
+  for (int r = 0; r < BOARD_SIZE; r++) {
+    for (int c = 0; c < BOARD_SIZE; c++) {
+      Coordinate coord(r, c);
+      Unit unit = b.getUnit(coord);
+      if (unit != Unit::Empty)
+        notifyMoveApplied(coord, unit);
+    }
+  }
+}
+
+void Manager::notifyMoveApplied(Coordinate coord, Unit unit) {
+  if (blackPlayer)
+    blackPlayer->onCoreMoveApplied(coord, unit);
+  if (whitePlayer)
+    whitePlayer->onCoreMoveApplied(coord, unit);
+}
+
+void Manager::notifyMoveReverted(Coordinate coord) {
+  if (blackPlayer)
+    blackPlayer->onCoreMoveReverted(coord);
+  if (whitePlayer)
+    whitePlayer->onCoreMoveReverted(coord);
 }

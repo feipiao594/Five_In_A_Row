@@ -86,6 +86,7 @@ public:
     case Unit::Empty:
       return emptyPiece;
     }
+    return emptyPiece;
   }
 };
 

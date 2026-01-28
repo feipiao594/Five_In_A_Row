@@ -8,6 +8,7 @@ PieceButton::PieceButton(const int _x, const int _y, const int n,
   PieceButton::n = n;
   setStyleSheet("border-image:none");
   setFixedSize(QSize(n, n));
+  setIconSize(QSize(n, n));
   setFlat(true);
   clearColor();
   connect(this, &QPushButton::clicked, this, &PieceButton::buttonPushed);
@@ -39,7 +40,6 @@ void PieceButton::buttonPushed() {
 void PieceButton::setImage(const QPixmap &map) {
   setStyleSheet("QPushButton{border:0px;}");
   this->setIcon(map);
-  this->setIconSize(QSize(n, n));
 }
 
 bool PieceButton::event(QEvent *event) {

@@ -166,6 +166,8 @@ int Computer::selectCandidates(QVector<std::pair<Coordinate, int>>& list, Unit u
 Coordinate Computer::getBestCoord(Unit unit) {
   QVector<std::pair<Coordinate, int>> candidateList;
   int maxScore = selectCandidates(candidateList, unit);
+  if (candidateList.empty())
+    return Coordinate(-1, -1);
   for (int i = (int)candidateList.size() - 1; i >= 0; i--) {
     if (candidateList.at(i).second < maxScore)
       candidateList.remove(i);
@@ -176,6 +178,8 @@ Coordinate Computer::getBestCoord(Unit unit) {
 Coordinate Computer::getGameCoord(Unit unit) {
   QVector<std::pair<Coordinate, int>> candidateList;
   int maxScore = selectCandidates(candidateList, unit);
+  if (candidateList.empty())
+    return Coordinate(-1, -1);
 
   for (int i = (int)candidateList.size() - 1; i >= 0; i--) {
     if (candidateList.at(i).second < maxScore)
