@@ -5,6 +5,8 @@
 
 #include "../controller/boardcontroller.h"
 #include "../model/manager.h"
+#include "../net/onlinesession.h"
+#include "../net/wsclient.h"
 
 MainUI::MainUI() : mainLayout(new QHBoxLayout) {
     setWindowTitle("五子棋");
@@ -139,7 +141,8 @@ void MainUI::onGameOver(Unit color) {
     disconnect(retract_black, &QPushButton::clicked, this, &MainUI::blackRetract);
     disconnect(retract_white, &QPushButton::clicked, this, &MainUI::whiteRetract);
     connect(retract_black, &QPushButton::clicked, this, &MainUI::restartGame);
-    retract_black->setText("重新开始");
+    const bool isOnline = OnlineSession::getInstance()->isActive();
+    retract_black->setText(isOnline ? "返回菜单" : "重新开始");
     text_white->hide();
     img_white->hide();
     retract_white->hide();
@@ -162,7 +165,8 @@ void MainUI::onGameOver(Unit color) {
         for (int c = 0; c < BOARD_SIZE; c++)
             pieces[r][c]->stopUsing();
 
-    text_black->setText(message + "\n游戏已结束，要再来一局吗？");
+    text_black->setText(isOnline ? (message + "\n游戏已结束，返回菜单？")
+                                 : (message + "\n游戏已结束，要再来一局吗？"));
     img_black->setPixmap(Resource::getInstance()->color2pixmap(color, false));
 }
 
@@ -181,7 +185,17 @@ void MainUI::setPieceColor(std::pair<int, int> pos, Unit color) {
 
 void MainUI::restartGame() {
     prepareNewGame();
+    if (OnlineSession::getInstance()->isActive()) {
+        OnlineSession::getInstance()->stop();
+        WsClient::getInstance()->disconnectNow();
+        BoardController::getInstance()->setUseManagerTurn(true);
+        BoardController::getInstance()->restartBoardController();
+        MenuUI::getInstance()->showMenu();
+        return;
+    }
+
     Manager::getInstance()->restart();
+    BoardController::getInstance()->setUseManagerTurn(true);
     BoardController::getInstance()->restartBoardController();
     MenuUI::getInstance()->showMenu();
 }
@@ -194,6 +208,13 @@ void MainUI::setComputerSides(bool blackIsComputer, bool whiteIsComputer) {
 
     text_black->setText(blackSideText);
     text_white->setText(whiteSideText);
+    retract_black->setEnabled(blackCanUndo);
+    retract_white->setEnabled(whiteCanUndo);
+}
+
+void MainUI::setUndoEnabled(bool blackEnabled, bool whiteEnabled) {
+    blackCanUndo = blackEnabled;
+    whiteCanUndo = whiteEnabled;
     retract_black->setEnabled(blackCanUndo);
     retract_white->setEnabled(whiteCanUndo);
 }

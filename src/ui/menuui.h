@@ -21,6 +21,9 @@ private:
     QRadioButton* localModeRadio;
     QRadioButton* onlineModeRadio;
 
+    QLabel* loginStatus;
+    QPushButton* loginButton;
+
     QGroupBox* roomGroup;
     QComboBox* blackType;
     QComboBox* whiteType;

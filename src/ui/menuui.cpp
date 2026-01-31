@@ -1,21 +1,38 @@
 #include "menuui.h"
 #include "mainui.h"
+#include "logindialog.h"
 #include "settingsdialog.h"
 
 #include "../controller/selectioncontroller.h"
+#include "../net/authapi.h"
+#include "../net/authstore.h"
+#include "../net/onlinesession.h"
+#include "../net/wsclient.h"
 
-#include <QMessageBox>
+static void updateLoginUi(QLabel* label, QPushButton* loginBtn,
+                          const QString& messageOverride = QString()) {
+    if (AuthStore::isLoggedIn()) {
+        loginBtn->setText("切换账号");
+        label->setText(messageOverride.isEmpty()
+                           ? QString("已登录：%1").arg(AuthStore::username())
+                           : messageOverride);
+    } else {
+        loginBtn->setText("登录/注册");
+        label->setText(messageOverride.isEmpty() ? "未登录" : messageOverride);
+    }
+}
 
 MenuUI::MenuUI()
     : mainLayout(new QVBoxLayout), title(new QLabel("五子棋")), modeGroup(new QGroupBox("模式")),
       localModeRadio(new QRadioButton("单机模式")),
-      onlineModeRadio(new QRadioButton("联机模式（暂未实现）")),
+      onlineModeRadio(new QRadioButton("联机模式")),
+      loginStatus(new QLabel), loginButton(new QPushButton("登录/注册")),
       roomGroup(new QGroupBox("房间设置")), blackType(new QComboBox), whiteType(new QComboBox),
       startButton(new QPushButton("开始")), settingsButton(new QPushButton("设置")),
       exitButton(new QPushButton("退出")) {
     setAttribute(Qt::WA_DeleteOnClose);
     setWindowTitle("菜单");
-    setFixedSize(QSize(420, 400));
+    setFixedSize(QSize(420, 480));
     setLayout(mainLayout);
 
     Resource::getInstance()->setParent(this);
@@ -28,17 +45,27 @@ MenuUI::MenuUI()
     mainLayout->addWidget(title);
 
     // mode group
-    auto modeLayout = new QVBoxLayout();
+    loginStatus->setStyleSheet("font-size: 12px; color: #666;");
+    mainLayout->addWidget(loginStatus);
+
+    auto modeLayout = new QGridLayout();
     modeGroup->setLayout(modeLayout);
     modeGroup->setStyleSheet("QGroupBox{font-size:14px;font-weight:600;}");
     localModeRadio->setStyleSheet("font-size: 14px;");
     onlineModeRadio->setStyleSheet("font-size: 14px;");
     localModeRadio->setMinimumHeight(28);
     onlineModeRadio->setMinimumHeight(28);
-    modeLayout->addWidget(localModeRadio);
-    modeLayout->addWidget(onlineModeRadio);
+    modeLayout->addWidget(localModeRadio, 0, 0, 1, 2);
+    modeLayout->addWidget(onlineModeRadio, 1, 0, 1, 2);
+    modeLayout->setColumnStretch(0, 1);
+    modeLayout->setColumnStretch(1, 0);
+    modeLayout->setRowStretch(2, 1);
+    loginButton->setMinimumSize(QSize(96, 34));
+    loginButton->setStyleSheet("font-size: 14px;");
+    modeLayout->addWidget(loginButton, 2, 1, Qt::AlignRight | Qt::AlignBottom);
     localModeRadio->setChecked(true);
     mainLayout->addWidget(modeGroup);
+    updateLoginUi(loginStatus, loginButton);
 
     // room group
     auto roomLayout = new QFormLayout();
@@ -83,6 +110,24 @@ MenuUI::MenuUI()
     connect(localModeRadio, &QRadioButton::toggled, this, &MenuUI::onModeChanged);
     connect(onlineModeRadio, &QRadioButton::toggled, this, &MenuUI::onModeChanged);
 
+    connect(loginButton, &QPushButton::clicked, this, [this]() {
+        LoginDialog dialog(this);
+        if (dialog.exec() == QDialog::Accepted) {
+            updateLoginUi(loginStatus, loginButton);
+        }
+    });
+
+    connect(AuthApi::getInstance(), &AuthApi::sessionChecked, this,
+            [this](bool loggedIn, const QString& message) {
+                Q_UNUSED(loggedIn);
+                updateLoginUi(loginStatus, loginButton, message);
+            });
+
+    if (AuthStore::isLoggedIn()) {
+        updateLoginUi(loginStatus, loginButton, "正在校验登录…");
+        AuthApi::getInstance()->checkSession();
+    }
+
     connect(this, &MenuUI::startLocal, SelectionController::getInstance(),
             &SelectionController::startLocal);
     connect(this, &MenuUI::startOnline, SelectionController::getInstance(),
@@ -106,7 +151,12 @@ void MenuUI::onModeChanged() {
 
 void MenuUI::onStartClicked() {
     if (onlineModeRadio->isChecked()) {
-        QMessageBox::information(this, "提示", "联机模式暂未实现。");
+        if (!AuthStore::isLoggedIn()) {
+            LoginDialog dialog(this);
+            if (dialog.exec() != QDialog::Accepted)
+                return;
+        }
+        updateLoginUi(loginStatus, loginButton);
         emit startOnline();
         return;
     }
@@ -121,9 +171,27 @@ void MenuUI::onStartClicked() {
 void MenuUI::onSettingsClicked() {
     SettingsDialog dialog(this);
     dialog.exec();
+    if (AuthStore::isLoggedIn()) {
+        updateLoginUi(loginStatus, loginButton, "正在校验登录…");
+        AuthApi::getInstance()->checkSession();
+    } else {
+        updateLoginUi(loginStatus, loginButton);
+    }
 }
 
 void MenuUI::showMenu() {
     MainUI::getInstance()->hide();
+
+    // 返回菜单时确保联机会话被释放（关闭对局窗口也会走到这里）。
+    if (OnlineSession::getInstance()->isActive()) {
+        OnlineSession::getInstance()->stop();
+        WsClient::getInstance()->disconnectNow();
+    }
+    if (AuthStore::isLoggedIn()) {
+        updateLoginUi(loginStatus, loginButton, "正在校验登录…");
+        AuthApi::getInstance()->checkSession();
+    } else {
+        updateLoginUi(loginStatus, loginButton);
+    }
     show();
 }

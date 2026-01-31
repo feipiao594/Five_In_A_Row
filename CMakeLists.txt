@@ -21,7 +21,7 @@ else()
     set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_SOURCE_DIR}/bin/release)
 endif()
 
-find_package(Qt6 REQUIRED COMPONENTS Core Widgets)
+find_package(Qt6 REQUIRED COMPONENTS Core Widgets Network WebSockets)
 
 file(GLOB_RECURSE SOURCE_FILES CONFIGURE_DEPENDS
     ${CMAKE_SOURCE_DIR}/src/*.cpp
@@ -67,4 +67,6 @@ endif()
 target_link_libraries(FIVE_IN_A_ROW
     Qt6::Core
     Qt6::Widgets
+    Qt6::Network
+    Qt6::WebSockets
 )

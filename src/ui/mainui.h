@@ -64,6 +64,7 @@ private:
 public:
     void clearPiecePos(int x, int y);
     void setPieceColor(std::pair<int, int> pos, Unit color);
+    void setUndoEnabled(bool blackEnabled, bool whiteEnabled);
     void piecePushed(int x, int y);
     static MainUI* getInstance() {
         static MainUI* singleton = nullptr;

@@ -1,12 +1,11 @@
 #include "manager.h"
 
+#include <QCoreApplication>
 #include <QDir>
 #include <QSettings>
-#include <QStandardPaths>
 
 static QSettings makeSettings() {
-    const auto baseDir = QStandardPaths::writableLocation(QStandardPaths::AppConfigLocation);
-    QDir().mkpath(baseDir);
+    const auto baseDir = QCoreApplication::applicationDirPath();
     return QSettings(baseDir + "/settings.ini", QSettings::IniFormat);
 }
 

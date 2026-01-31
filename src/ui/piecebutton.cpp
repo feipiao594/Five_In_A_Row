@@ -31,7 +31,6 @@ void PieceButton::updateColor() {
 
 void PieceButton::buttonPushed() {
     if (canhover && BoardController::getInstance()->getIsYourTurn()) {
-        canhover = false;
         BoardController::getInstance()->pieceClicked(x, y);
     }
 }

@@ -4,6 +4,7 @@
 #include <QDialog>
 #include <QLabel>
 #include <QLayout>
+#include <QLineEdit>
 #include <QPushButton>
 #include <QSpinBox>
 
@@ -19,6 +20,12 @@ private:
 
     QLabel* aiDelayLabel;
     QSpinBox* aiDelaySpin;
+
+    QLabel* netTitle;
+    QLabel* serverLabel;
+    QLineEdit* serverEdit;
+    QLabel* loginStatus;
+    QPushButton* logoutButton;
 
     QHBoxLayout* buttonRow;
     QPushButton* closeButton;

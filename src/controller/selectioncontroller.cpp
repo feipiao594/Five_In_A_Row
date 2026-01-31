@@ -1,6 +1,10 @@
 #include "selectioncontroller.h"
 #include "../model/manager.h"
 #include "boardcontroller.h"
+#include "../net/onlinesession.h"
+#include "../net/wsclient.h"
+#include "../ui/menuui.h"
+#include "../ui/onlineroomdialog.h"
 
 void SelectionController::startLocal(bool blackIsComputer, bool whiteIsComputer) {
     auto mgr = Manager::getInstance();
@@ -30,5 +34,27 @@ void SelectionController::startLocal(bool blackIsComputer, bool whiteIsComputer)
 }
 
 void SelectionController::startOnline() {
-    // 暂未实现：未来可在这里创建 NetworkPlayer，并接入网络模块。
+    auto boardController = BoardController::getInstance();
+
+    // 清理上一次开局遗留的输入连接（只会有 HumanPlayer 监听这个信号）。
+    QObject::disconnect(boardController, &BoardController::boardClicked, nullptr, nullptr);
+
+    // 切到联机：回合/落子不再由本地 Manager 驱动 UI。
+    boardController->setUseManagerTurn(false);
+    boardController->setIsYourTurn(false);
+    boardController->setWhoTurn(Unit::Black);
+
+    OnlineSession::getInstance()->start();
+
+    OnlineRoomDialog dialog(MenuUI::getInstance());
+    dialog.setModal(true);
+    WsClient::getInstance()->connectIfNeeded();
+
+    if (dialog.exec() == QDialog::Accepted) {
+        MenuUI::getInstance()->startGame();
+        return;
+    }
+
+    OnlineSession::getInstance()->stop();
+    WsClient::getInstance()->disconnectNow();
 }
