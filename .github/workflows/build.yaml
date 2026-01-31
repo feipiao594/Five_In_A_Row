@@ -80,7 +80,7 @@ jobs:
           7z a -tzip ../../../FIVE_IN_A_ROW.zip *
 
       - name: Upload artifacts
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: build-artifacts-${{ matrix.os_name }}
           path: ${{ matrix.asset_path }}
