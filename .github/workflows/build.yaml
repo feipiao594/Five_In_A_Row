@@ -37,6 +37,7 @@ jobs:
         uses: jurplel/install-qt-action@v3
         with:
           version: "6.5.3"
+          modules: 'qtwebsockets'
           cache: true
 
       - name: Configure CMake
