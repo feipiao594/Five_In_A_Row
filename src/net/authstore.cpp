@@ -1,12 +1,11 @@
 #include "authstore.h"
 
-#include <QCoreApplication>
-#include <QDir>
 #include <QSettings>
 
+#include "../util/settingspath.h"
+
 static QSettings makeSettings() {
-  const auto baseDir = QCoreApplication::applicationDirPath();
-  return QSettings(baseDir + "/settings.ini", QSettings::IniFormat);
+  return QSettings(SettingsPath::iniFilePath(), QSettings::IniFormat);
 }
 
 QString AuthStore::serverBaseUrl() {

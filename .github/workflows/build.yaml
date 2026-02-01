@@ -37,7 +37,7 @@ jobs:
         uses: jurplel/install-qt-action@v3
         with:
           version: "6.5.3"
-          modules: 'qtwebsockets'
+          modules: 'qtwebsockets qtwaylandcompositor'
           cache: true
 
       - name: Configure CMake
@@ -50,7 +50,7 @@ jobs:
         if: matrix.os_name == 'linux'
         run: |
           sudo add-apt-repository universe
-          sudo apt install appstream libfuse2 libxcb-cursor0
+          sudo apt install appstream libfuse2 libxcb-cursor0 libwayland-client0 libxkbcommon0
 
       - name: Install LinuxDeploy
         if: matrix.os_name == 'linux'
