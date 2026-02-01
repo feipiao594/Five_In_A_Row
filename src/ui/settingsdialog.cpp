@@ -20,11 +20,12 @@ SettingsDialog::SettingsDialog(QWidget* parent)
       netTitle(new QLabel("联机")),
       serverLabel(new QLabel("服务器地址")),
       serverEdit(new QLineEdit),
+      ignoreSslErrors(new QCheckBox("忽略 SSL 证书错误（不安全，仅用于调试）")),
       loginStatus(new QLabel), logoutButton(new QPushButton("退出登录")),
       buttonRow(new QHBoxLayout), closeButton(new QPushButton("关闭")) {
   setWindowTitle("设置");
   setModal(true);
-  setFixedSize(QSize(420, 300));
+  setFixedSize(QSize(420, 340));
   setLayout(mainLayout);
 
     mainLayout->setContentsMargins(18, 18, 18, 18);
@@ -59,6 +60,10 @@ SettingsDialog::SettingsDialog(QWidget* parent)
   netRow->addWidget(serverEdit);
   mainLayout->addLayout(netRow);
 
+  ignoreSslErrors->setChecked(AuthStore::ignoreSslErrors());
+  ignoreSslErrors->setStyleSheet("font-size: 12px; color: #666;");
+  mainLayout->addWidget(ignoreSslErrors);
+
   loginStatus->setStyleSheet("font-size: 12px; color: #666;");
   mainLayout->addWidget(loginStatus);
 
@@ -85,6 +90,10 @@ SettingsDialog::SettingsDialog(QWidget* parent)
   connect(serverEdit, &QLineEdit::editingFinished, this, [this]() {
       AuthStore::setServerBaseUrl(serverEdit->text().trimmed());
       serverEdit->setText(AuthStore::serverBaseUrl());
+  });
+
+  connect(ignoreSslErrors, &QCheckBox::toggled, this, [](bool on) {
+    AuthStore::setIgnoreSslErrors(on);
   });
 
   connect(logoutButton, &QPushButton::clicked, this, [this]() {

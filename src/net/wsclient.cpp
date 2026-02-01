@@ -4,6 +4,7 @@
 
 #include <QJsonDocument>
 #include <QJsonObject>
+#include <QSslError>
 #include <QUrlQuery>
 #include <QUuid>
 #include <QWebSocket>
@@ -21,6 +22,13 @@ WsClient::WsClient(QObject* parent) : QObject(parent), ws_(new QWebSocket()) {
   });
   connect(ws_, &QWebSocket::textMessageReceived, this,
           &WsClient::handleTextMessage);
+  connect(ws_, &QWebSocket::sslErrors, this,
+          [this](const QList<QSslError>& errors) {
+            Q_UNUSED(errors);
+            if (AuthStore::ignoreSslErrors()) {
+              ws_->ignoreSslErrors();
+            }
+          });
   connect(ws_, &QWebSocket::errorOccurred, this,
           [this](QAbstractSocket::SocketError) {
             connecting_ = false;

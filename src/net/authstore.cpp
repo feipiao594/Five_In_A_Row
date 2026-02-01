@@ -13,6 +13,16 @@ QString AuthStore::serverBaseUrl() {
   return settings.value("net/serverBaseUrl", "http://127.0.0.1:8080").toString();
 }
 
+bool AuthStore::ignoreSslErrors() {
+  auto settings = makeSettings();
+  return settings.value("net/ignoreSslErrors", false).toBool();
+}
+
+void AuthStore::setIgnoreSslErrors(bool ignore) {
+  auto settings = makeSettings();
+  settings.setValue("net/ignoreSslErrors", ignore);
+}
+
 void AuthStore::setServerBaseUrl(const QString& baseUrl) {
   QString v = baseUrl.trimmed();
   if (v.isEmpty())

@@ -6,6 +6,7 @@
 #include <QNetworkAccessManager>
 #include <QNetworkReply>
 #include <QNetworkRequest>
+#include <QSslError>
 #include <QUrl>
 
 static QUrl apiUrl(const QString& path) {
@@ -31,7 +32,15 @@ static bool ensureHttpUrlOrFail(const QUrl& url, const std::function<void(const 
   return true;
 }
 
-AuthApi::AuthApi(QObject* parent) : QObject(parent), nam_(new QNetworkAccessManager(this)) {}
+AuthApi::AuthApi(QObject* parent) : QObject(parent), nam_(new QNetworkAccessManager(this)) {
+  connect(nam_, &QNetworkAccessManager::sslErrors, this,
+          [](QNetworkReply* reply, const QList<QSslError>& errors) {
+            Q_UNUSED(errors);
+            if (AuthStore::ignoreSslErrors() && reply) {
+              reply->ignoreSslErrors();
+            }
+          });
+}
 
 AuthApi* AuthApi::getInstance() {
   static AuthApi* singleton = nullptr;

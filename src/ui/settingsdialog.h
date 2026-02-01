@@ -6,6 +6,7 @@
 #include <QLayout>
 #include <QLineEdit>
 #include <QPushButton>
+#include <QCheckBox>
 #include <QSpinBox>
 
 class SettingsDialog : public QDialog {
@@ -24,6 +25,7 @@ private:
     QLabel* netTitle;
     QLabel* serverLabel;
     QLineEdit* serverEdit;
+    QCheckBox* ignoreSslErrors;
     QLabel* loginStatus;
     QPushButton* logoutButton;
 

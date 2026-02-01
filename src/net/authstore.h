@@ -7,6 +7,8 @@ class AuthStore {
 public:
   static QString serverBaseUrl();
   static void setServerBaseUrl(const QString& baseUrl);
+  static bool ignoreSslErrors();
+  static void setIgnoreSslErrors(bool ignore);
 
   static bool isLoggedIn();
   static QString username();
@@ -19,4 +21,3 @@ public:
 };
 
 #endif // AUTHSTORE_H
-
