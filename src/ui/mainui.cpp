@@ -7,6 +7,7 @@
 #include "../model/manager.h"
 #include "../net/onlinesession.h"
 #include "../net/wsclient.h"
+#include "onlineroomdialog.h"
 
 MainUI::MainUI() : mainLayout(new QHBoxLayout) {
     setWindowTitle("五子棋");
@@ -142,7 +143,7 @@ void MainUI::onGameOver(Unit color) {
     disconnect(retract_white, &QPushButton::clicked, this, &MainUI::whiteRetract);
     connect(retract_black, &QPushButton::clicked, this, &MainUI::restartGame);
     const bool isOnline = OnlineSession::getInstance()->isActive();
-    retract_black->setText(isOnline ? "返回菜单" : "重新开始");
+    retract_black->setText(isOnline ? "返回房间" : "重新开始");
     text_white->hide();
     img_white->hide();
     retract_white->hide();
@@ -165,7 +166,7 @@ void MainUI::onGameOver(Unit color) {
         for (int c = 0; c < BOARD_SIZE; c++)
             pieces[r][c]->stopUsing();
 
-    text_black->setText(isOnline ? (message + "\n游戏已结束，返回菜单？")
+    text_black->setText(isOnline ? (message + "\n游戏已结束，返回房间？")
                                  : (message + "\n游戏已结束，要再来一局吗？"));
     img_black->setPixmap(Resource::getInstance()->color2pixmap(color, false));
 }
@@ -186,6 +187,17 @@ void MainUI::setPieceColor(std::pair<int, int> pos, Unit color) {
 void MainUI::restartGame() {
     prepareNewGame();
     if (OnlineSession::getInstance()->isActive()) {
+        hide();
+
+        OnlineRoomDialog dialog(this);
+        dialog.setModal(true);
+
+        // 若连接已断开，让用户手动点“连接服务器”；这里不自动 connectIfNeeded，避免误触。
+        if (dialog.exec() == QDialog::Accepted) {
+            return;
+        }
+
+        // 用户关闭房间页：退出联机模式，回到菜单。
         OnlineSession::getInstance()->stop();
         WsClient::getInstance()->disconnectNow();
         BoardController::getInstance()->setUseManagerTurn(true);
